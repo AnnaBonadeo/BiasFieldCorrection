@@ -1,0 +1,16 @@
+_pycache_/
+*.py[cod]
+*.egg
+*.egg-info/
+dist/
+build/
+.env
+.venv
+.idea
+Thumbs.db
+desktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
+
+bias_field_correction_samples/*.*
