@@ -3,6 +3,7 @@ import SimpleITK as sitk
 import numpy as np
 import matplotlib.pyplot as plt
 
+# Anna
 
 # Get intensity array from MRI image
 raw_img_sitk = sitk.ReadImage('bias_field_correction_samples/MR_Gd.nii', sitk.sitkFloat32) # define the pixel type
