@@ -1,7 +1,7 @@
 from nilearn import datasets
 from nilearn import plotting
 
-#Load data
+#Load data!
 stat_img = datasets.load_sample_motor_activation_image()
 # returns string path to data
 print(stat_img)
