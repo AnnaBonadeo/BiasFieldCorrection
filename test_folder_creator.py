@@ -19,16 +19,18 @@ def random_filename(extension=".nii.gz"):
 
 # Creating subfolders with .nii.gz files
 for i in range(num_folders):
-    folder_name = CONTROL1 + f"subject_{i+1}"
+    folder_name = CONTROL1 + f"{i+1}"
     folder_path = os.path.join(test_main_dir, folder_name)
     os.makedirs(folder_path, exist_ok=True)
 
     # Creating the required files
-    required_files = [CONTROL1 + "T1.nii.gz", CONTROL1 + "T2.nii.gz", CONTROL1 + "FLAIR.nii.gz",
-                      CONTROL1 + "T1ce.nii.gz", "T1.nii.gz",
-                      "T2.nii.gz", "FLAIR.nii.gz", "T1ce.nii.gz",
-                      "brain_parenchyma_segmentation.nii.gz",
-                      "brain_segmentation.nii.gz", "tumor_segmentation.nii.gz" ]
+    required_files = [f"UCSF-PDGM-{i+1}_T1.nii.gz", f"UCSF-PDGM-{i+1}_T2.nii.gz", f"UCSF-PDGM-{i+1}_FLAIR.nii.gz",
+                      f"UCSF-PDGM-{i+1}_T1ce.nii.gz", f"{i+1}_T1.nii.gz",
+                      f"{i+1}_T2.nii.gz", f"{i+1}_FLAIR.nii.gz", f"{i+1}_T1ce.nii.gz",
+                      f"UCSF-PDGM-{i+1}_-brain_parenchyma_segmentation.nii.gz",
+                      f"UCSF-PDGM-{i+1}_brain_segmentation.nii.gz", f"UCSF-PDGM-{i+1}_tumor_segmentation.nii.gz",
+                      f"{i+1}_brain_parenchyma_segmentation.nii.gz",
+                      f"{i+1}_brain_segmentation.nii.gz", f"{i+1}_tumor_segmentation.nii.gz"  ]
     for file in required_files:
         with open(os.path.join(folder_path, file), "w") as f:
             f.write("Simulated NIfTI data")  # Placeholder content

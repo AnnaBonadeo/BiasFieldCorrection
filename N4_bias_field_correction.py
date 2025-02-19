@@ -1,23 +1,29 @@
 import os
 import subprocess
-from save_files import CONTROL1, CONTROL_anat, NEW_DIR, anat_dir, seg_dir, reg_dir
+from save_files import CONTROL1, CONTROL_anat, NEW_DIR
 
 
 
 for folder in os.listdir(NEW_DIR):
     folder_path = os.path.join(NEW_DIR, folder)
+    folder_name = folder.split('_')[0]
 
     # Check if it's a subject folder
     if os.path.isdir(folder_path) and folder.startswith(CONTROL1):
         print(f"Processing folder: {folder}")
 
+
+        anat_dir = os.path.join(folder_path, "anat")
+        seg_dir = os.path.join(folder_path, "seg")
+        reg_dir = os.path.join(folder_path, "reg")
         # Ensure 'reg' directory exists
         os.makedirs(reg_dir, exist_ok=True)
 
         # Paths for segmentation masks
-        brain_segmentation = os.path.join(seg_dir, "brain_segmentation.nii.gz")
-        brain_parenchyma_segmentation = os.path.join(seg_dir, "brain_parenchyma_segmentation.nii.gz")
-        tumor_segmentation = os.path.join(seg_dir, "tumor_segmentation.nii.gz")
+        brain_segmentation = os.path.join(seg_dir, f"{folder_name}_brain_segmentation.nii.gz")
+        brain_parenchyma_segmentation = os.path.join(seg_dir, f"{folder_name}_brain_parenchyma_segmentation.nii.gz")
+        tumor_segmentation = os.path.join(seg_dir, f"{folder_name}_tumor_segmentation.nii.gz")
+
 
 
         for nii_file in os.listdir(anat_dir):
