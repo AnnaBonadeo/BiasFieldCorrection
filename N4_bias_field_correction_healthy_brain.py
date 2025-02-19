@@ -37,7 +37,7 @@ for folder in os.listdir(NEW_DIR):
                 commands = [
                     {
                         "output_name": f"{base_name}_N4_brain_healthy_mask",
-                        "weight": brain_healthy_segmentation,
+                        "weight": brain_segmentation,
                         "mask": brain_healthy_segmentation,
                     },
                     {
