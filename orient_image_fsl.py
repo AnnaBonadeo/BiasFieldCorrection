@@ -1,9 +1,9 @@
 import os
 import subprocess
 
-from save_files import CONTROL1
+CONTROL1 = "UCSF-PDGM-"
 
-MAIN_DIR = r"C:\Users\Anna\PycharmProjects\Brain_Imaging\try_directory"
+MAIN_DIR = r"/mnt/external/patients_UCSF/UCSF-PDGM-v3"
 
 for folder in os.listdir(MAIN_DIR):
     folder_path = os.path.join(MAIN_DIR, folder)
@@ -20,5 +20,8 @@ for folder in os.listdir(MAIN_DIR):
                 # Apply fslreorient2std and overwrite the file
                 subprocess.run(["fslreorient2std", file_path, file_path], check=True)
                 print(f"Updated: {file_path}")
+
+
+
 
 
