@@ -5,12 +5,12 @@ import shutil
 CONTROL1 = "UCSF-PDGM-"
 
 # File groups
-CONTROL_anat = ("T1.nii.gz", "T1ce.nii.gz", "T2.nii.gz", "FLAIR.nii.gz")
+CONTROL_anat = ("T1.nii.gz", "T1c.nii.gz", "T2.nii.gz", "FLAIR.nii.gz")
 CONTROL_seg = ("brain_parenchyma_segmentation.nii.gz", "brain_segmentation.nii.gz", "tumor_segmentation.nii.gz")
 
 # Paths
-MAIN_DIR = "test_dataset"
-NEW_DIR = "try_directory"
+MAIN_DIR = "/mnt/external/patients_UCSF/UCSF-PDGM-v3"
+NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 
 # Iterate over each subject folder
 for folder in os.listdir(MAIN_DIR):

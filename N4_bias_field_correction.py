@@ -12,18 +12,16 @@ for folder in os.listdir(NEW_DIR):
     if os.path.isdir(folder_path) and folder.startswith(CONTROL1):
         print(f"Processing folder: {folder}")
 
-
         anat_dir = os.path.join(folder_path, "anat")
         seg_dir = os.path.join(folder_path, "seg")
         reg_dir = os.path.join(folder_path, "reg")
         # Ensure 'reg' directory exists
         os.makedirs(reg_dir, exist_ok=True)
-
+        
         # Paths for segmentation masks
         brain_segmentation = os.path.join(seg_dir, f"{folder_name}_brain_segmentation.nii.gz")
         brain_parenchyma_segmentation = os.path.join(seg_dir, f"{folder_name}_brain_parenchyma_segmentation.nii.gz")
         tumor_segmentation = os.path.join(seg_dir, f"{folder_name}_tumor_segmentation.nii.gz")
-
 
 
         for nii_file in os.listdir(anat_dir):
@@ -73,6 +71,3 @@ for folder in os.listdir(NEW_DIR):
                     denoise_command = f"DenoiseImage -d 3 -i {output_corrected} -o {denoised_output}"
                     print(f"Executing: {denoise_command}")
                     subprocess.run(denoise_command, shell=True)
-
-
-
