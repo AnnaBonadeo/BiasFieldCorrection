@@ -1,9 +1,7 @@
 import nibabel as nib
-import matplotlib.pyplot as plt
 import numpy as np
 
 import os
-import subprocess
 from save_files import CONTROL1, NEW_DIR
 
 
