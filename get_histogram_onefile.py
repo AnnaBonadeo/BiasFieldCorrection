@@ -2,7 +2,9 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-file_array = input("Enter the file path: ")
+file_path = input("Enter the file path: ")
+file_array = np.load(file_path).astype(np.float32)  # or np.float64
+
 hist, bins = np.histogram(file_array, bins=65536, range=(0, 65536))
 
 plt.hist(hist, bins=bins)
