@@ -2,8 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-NEW_DIR = "/mnt/external/reorg_patients_UCSF"
-
+from save_files import NEW_DIR
 INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
 
 def get_user_answer(INPUT_MRI):
