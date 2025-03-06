@@ -27,7 +27,7 @@ base_image = np.clip(base_image, 0, 255)
 nifti_image = nib.Nifti1Image(base_image, affine=np.eye(4))
 
 # Save as NIfTI file
-nifti_filename = "bias_field_correction_samples/synthetic_mri.nii.gz"
+nifti_filename = "bias_field_correction_samples/reg/synthetic_mri.nii.gz"
 nib.save(nifti_image, nifti_filename)
 
 print(f"Generated NIfTI file: {nifti_filename}")
