@@ -6,27 +6,14 @@ from save_files import NEW_DIR
 INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
 
 def get_user_answer(INPUT_MRI):
-    user_ans = input("Enter the MRI image to analyze: ")
+    user_ans = input("Enter the MRI image to analyze: ").upper()
     while user_ans not in INPUT_MRI:
         print("Invalid input. Please try again.")
         user_ans = input("Enter the MRI image to analyze: ")
     return user_ans
 
-"""file_path = input("Enter file path: ")
-file_array = np.load(file_path).astype(np.float32)  # or np.float64
-
-hist, bins = np.histogram(file_array, bins=65536, range=(0, 65536))
-
-plt.hist(hist, bins=bins)
-plt.figure(figsize=(10, 6))
-plt.plot(bins[1:-1], hist[1:])  # The bin edges exclude the last one
-plt.xlabel('Voxel Intensity')
-plt.ylabel('Frequency')
-plt.title('Histogram of Voxel Intensities (Rescaled)')
-plt.grid(True)
-plt.show()"""
 # Load file
-user_ans_MRI = get_user_answer(INPUT_MRI).upper()
+user_ans_MRI = get_user_answer(INPUT_MRI)
 patient_number = input("Enter patient number: ")
 
 for folder in os.listdir(NEW_DIR):
@@ -65,6 +52,8 @@ for folder in os.listdir(NEW_DIR):
                 # Show plot
                 plt.show()
         break
+    else:
+        print(f"Patient number {patient_number} not found. Patients go from 1 to 540")
 
 """file_path = input("Enter file path: ")
 file_array = np.load(file_path).astype(np.float32)  # or np.float64"""
