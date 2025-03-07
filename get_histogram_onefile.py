@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import subprocess
 
 from save_files import NEW_DIR
 INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
@@ -9,12 +10,16 @@ def get_user_answer(INPUT_MRI):
     user_ans = input("Enter the MRI image to analyze: ").upper()
     while user_ans not in INPUT_MRI:
         print("Invalid input. Please try again.")
-        user_ans = input("Enter the MRI image to analyze: ")
+        user_ans = input("Enter the MRI image to analyze: ").upper()
     return user_ans
 
 # Load file
 user_ans_MRI = get_user_answer(INPUT_MRI)
-patient_number = input("Enter patient number: ")
+patient_number = int(input("Enter patient number: "))
+while patient_number not in range(1,540):
+	print("Patients go from 1 to 540")
+	patient_number = int(input("Enter another number: "))
+patient_number = str(patient_number)
 
 for folder in os.listdir(NEW_DIR):
     if patient_number in folder:
@@ -51,9 +56,11 @@ for folder in os.listdir(NEW_DIR):
 
                 # Show plot
                 plt.show()
+                
+                #fsleyes_command = f"fsleyes {nii_path}"
+                #subprocess.run(fsleyes_command, shell=True)
+
         break
-    else:
-        print(f"Patient number {patient_number} not found. Patients go from 1 to 540")
 
 """file_path = input("Enter file path: ")
 file_array = np.load(file_path).astype(np.float32)  # or np.float64"""
