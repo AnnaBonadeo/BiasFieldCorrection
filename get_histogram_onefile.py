@@ -5,7 +5,7 @@ import seaborn as sns
 import subprocess
 
 from save_files import NEW_DIR
-from importing_tumorseg_array import CONTROL_TUMOR
+CONTROL_TUMOR = "tumor_segmentation"
 INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
 
 
