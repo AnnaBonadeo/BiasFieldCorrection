@@ -21,15 +21,21 @@ def get_user_answer(INPUT_MRI):
 
     return valid_answers[user_ans]  # Return the correctly formatted value (T1/T1c/T2/FLAIR)
 
+def get_patients_number():
+    patient_number = int(input("Enter patient number: "))
+    # Ensure patient number is within the valid range (1 to 540)
+    while patient_number not in range(1, 541):
+        print("Patients go from 1 to 540")
+        patient_number = int(input("Enter another number: "))
+    # Convert patient number to a string for folder name matching
+    patient_number_str = str(patient_number)
+    return patient_number_str
 
 # Load file
 user_ans_MRI = get_user_answer(INPUT_MRI)
 print(f"Selected MRI Type: {user_ans_MRI}")
-patient_number = int(input("Enter patient number: "))
-while patient_number not in range(1,540):
-	print("Patients go from 1 to 540")
-	patient_number = int(input("Enter another number: "))
-patient_number = str(patient_number)
+patient_number = get_patients_number()
+print(f"Selected patient number: {patient_number}")
 
 for folder in os.listdir(NEW_DIR):
     if patient_number in folder:
