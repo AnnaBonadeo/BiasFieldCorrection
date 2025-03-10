@@ -54,7 +54,7 @@ for folder in os.listdir(NEW_DIR):
 
                 # Compute histogram
                 hist_nii, bins_nii = np.histogram(nii_file_array, bins=655, range=(0, 65536))
-                hist_tumor_seg, _ = np.histogram(nii_file_array, bins=655, range=(0, 65536))
+                hist_tumor_seg, _ = np.histogram(tumor_seg_array, bins=655, range=(0, 65536))
 
                 # Use Seaborn's dark style
                 sns.set_style("dark")
