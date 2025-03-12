@@ -31,7 +31,7 @@ def get_patients_number():
     patient_number_str = str(patient_number)
     return patient_number_str
 
-def get_histogram_from_niifile(check:str, nii_file, array_dir):
+def get_histogram_from_niifile(check: str, nii_file, array_dir):
     if check in nii_file:
         niifile_path = os.path.join(array_dir, nii_file)
         niifile_array = np.load(niifile_path).astype(np.float32)
@@ -39,7 +39,10 @@ def get_histogram_from_niifile(check:str, nii_file, array_dir):
         hist_niifile, bins_niifile = np.histogram(niifile_array, bins=655, range=(0, 65536))
         return hist_niifile, bins_niifile
     else:
-        print("File not found")
+        print(f"{check} not found in {nii_file}. Skipping.")
+        return None, None  # Return None for both hist and bins if the file doesn't match
+
+        
 # Load file
 user_ans_MRI = get_user_answer(INPUT_MRI)
 print(f"Selected MRI Type: {user_ans_MRI}")
@@ -56,12 +59,17 @@ for folder in os.listdir(NEW_DIR):
         for nii_file in os.listdir(array_dir):
             hist_tumor_seg, bins_tumor_seg = get_histogram_from_niifile(CONTROL_TUMOR, nii_file, array_dir)
             hist_nii, bins_nii = get_histogram_from_niifile(user_ans_MRI, nii_file, array_dir)
+            
+            if hist_tumor_seg is None or hist_nii is None:
+            	print(f"Skipping file: {nii_file} due to missing histogram data.")
+            	continue
+        
             # Use Seaborn's dark style
             sns.set_style("dark")
             plt.figure(figsize=(10, 6), facecolor='black')
 
             # Plot histograms using Seaborn
-            sns.lineplot(x=bins_nii[1:-1], y=hist_nii[1:], color='white', linewidth=1, label='Brain')
+            #sns.lineplot(x=bins_nii[1:-1], y=hist_nii[1:], color='white', linewidth=1, label='Brain')
             sns.lineplot(x=bins_nii[1:-1], y=hist_tumor_seg[1:], color='red', linewidth=1, label='Tumor')
 
             # Labels and title
