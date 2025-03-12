@@ -31,6 +31,15 @@ def get_patients_number():
     patient_number_str = str(patient_number)
     return patient_number_str
 
+def get_histogram_from_niifile(check:str, nii_file, array_dir):
+    if check in nii_file:
+        niifile_path = os.path.join(array_dir, nii_file)
+        niifile_array = np.load(niifile_path).astype(np.float32)
+        print(niifile_array)
+        hist_niifile, bins_niifile = np.histogram(niifile_array, bins=655, range=(0, 65536))
+        return hist_niifile, bins_niifile
+    else:
+        print("File not found")
 # Load file
 user_ans_MRI = get_user_answer(INPUT_MRI)
 print(f"Selected MRI Type: {user_ans_MRI}")
@@ -45,37 +54,29 @@ for folder in os.listdir(NEW_DIR):
         # Ensure directories exist
         os.makedirs(array_dir, exist_ok=True)
         for nii_file in os.listdir(array_dir):
-            if CONTROL_TUMOR in nii_file:
-                tumor_seg_path = os.path.join(array_dir, nii_file)
-                tumor_seg_array = np.load(tumor_seg_path).astype(np.float32)
-                print(tumor_seg_array)
-                hist_tumor_seg, _ = np.histogram(tumor_seg_array, bins=655, range=(0, 65536))
-            if user_ans_MRI in nii_file:
-                nii_path = os.path.join(array_dir, nii_file)
-                nii_file_array = np.load(nii_path).astype(np.float32)  # or np.float64
-                hist_nii, bins_nii = np.histogram(nii_file_array, bins=655, range=(0, 65536))
+            hist_tumor_seg, bins_tumor_seg = get_histogram_from_niifile(CONTROL_TUMOR, nii_file, array_dir)
+            hist_nii, bins_nii = get_histogram_from_niifile(user_ans_MRI, nii_file, array_dir)
+            # Use Seaborn's dark style
+            sns.set_style("dark")
+            plt.figure(figsize=(10, 6), facecolor='black')
 
-                # Use Seaborn's dark style
-                sns.set_style("dark")
-                plt.figure(figsize=(10, 6), facecolor='black')
+            # Plot histograms using Seaborn
+            sns.lineplot(x=bins_nii[1:-1], y=hist_nii[1:], color='white', linewidth=1, label='Brain')
+            sns.lineplot(x=bins_nii[1:-1], y=hist_tumor_seg[1:], color='red', linewidth=1, label='Tumor')
 
-                # Plot histograms using Seaborn
-                #sns.lineplot(x=bins_nii[1:-1], y=hist_nii[1:], color='white', linewidth=1, label='Brain')
-                sns.lineplot(x=bins_nii[1:-1], y=hist_tumor_seg[1:], color='red', linewidth=1, label='Tumor')
+            # Labels and title
+            plt.xlabel('Voxel Intensity', color='white')
+            plt.ylabel('Frequency', color='white')
+            plt.title('Histogram of Voxel Intensities (Rescaled)', color='white')
+            plt.legend(loc='upper right')
 
-                # Labels and title
-                plt.xlabel('Voxel Intensity', color='white')
-                plt.ylabel('Frequency', color='white')
-                plt.title('Histogram of Voxel Intensities (Rescaled)', color='white')
-                plt.legend(loc='upper right')
+            # Set dark background
+            plt.gca().set_facecolor('black')
+            plt.tick_params(axis='both', colors='white')
+            plt.grid(True, linestyle='--', linewidth=0.5, color='gray')
 
-                # Set dark background
-                plt.gca().set_facecolor('black')
-                plt.tick_params(axis='both', colors='white')
-                plt.grid(True, linestyle='--', linewidth=0.5, color='gray')
-
-                # Show plot
-                plt.show()
+            # Show plot
+            plt.show()
 
         break
 
