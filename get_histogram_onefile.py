@@ -48,6 +48,7 @@ for folder in os.listdir(NEW_DIR):
             if CONTROL_TUMOR in nii_file:
                 tumor_seg_path = os.path.join(array_dir, nii_file)
                 tumor_seg_array = np.load(tumor_seg_path).astype(np.float32)
+                print(tumor_seg_array)
                 hist_tumor_seg, _ = np.histogram(tumor_seg_array, bins=655, range=(0, 65536))
             if user_ans_MRI in nii_file:
                 nii_path = os.path.join(array_dir, nii_file)
@@ -59,7 +60,7 @@ for folder in os.listdir(NEW_DIR):
                 plt.figure(figsize=(10, 6), facecolor='black')
 
                 # Plot histograms using Seaborn
-                sns.lineplot(x=bins_nii[1:-1], y=hist_nii[1:], color='white', linewidth=1, label='Brain')
+                #sns.lineplot(x=bins_nii[1:-1], y=hist_nii[1:], color='white', linewidth=1, label='Brain')
                 sns.lineplot(x=bins_nii[1:-1], y=hist_tumor_seg[1:], color='red', linewidth=1, label='Tumor')
 
                 # Labels and title
