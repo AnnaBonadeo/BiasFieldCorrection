@@ -31,17 +31,6 @@ def get_patients_number():
     patient_number_str = str(patient_number)
     return patient_number_str
 
-def get_histogram_from_niifile(check: str, nii_file, array_dir):
-    if check in nii_file:
-        niifile_path = os.path.join(array_dir, nii_file)
-        niifile_array = np.load(niifile_path).astype(np.float32)
-        print(niifile_array)
-        hist_niifile, bins_niifile = np.histogram(niifile_array, bins=655, range=(0, 65536))
-        return hist_niifile, bins_niifile
-    else:
-        print(f"{check} not found in {nii_file}. Skipping.")
-        return None, None  # Return None for both hist and bins if the file doesn't match
-
         
 # Load file
 user_ans_MRI = get_user_answer(INPUT_MRI)
@@ -56,35 +45,52 @@ for folder in os.listdir(NEW_DIR):
         array_dir = os.path.join(folder_path, "array")
         # Ensure directories exist
         os.makedirs(array_dir, exist_ok=True)
+        # idea provare a trovare hist_tumor seg fuori dal for e poi fare lista degli altri histogrammi e salvare i nomi !!!!
+        tumor_seg_data = []
+        mri_data = {}
         for nii_file in os.listdir(array_dir):
-            hist_tumor_seg, bins_tumor_seg = get_histogram_from_niifile(CONTROL_TUMOR, nii_file, array_dir)
-            hist_nii, bins_nii = get_histogram_from_niifile(user_ans_MRI, nii_file, array_dir)
-            
-            if hist_tumor_seg is None or hist_nii is None:
-            	print(f"Skipping file: {nii_file} due to missing histogram data.")
-            	continue
-        
-            # Use Seaborn's dark style
-            sns.set_style("dark")
-            plt.figure(figsize=(10, 6), facecolor='black')
+            if (CONTROL_TUMOR not in nii_file) or (user_ans_MRI not in nii_file):
+                continue
+            elif CONTROL_TUMOR in nii_file:
+                tumor_seg_path = os.path.join(array_dir, nii_file)
+                tumor_seg_array = np.load(tumor_seg_path).astype(np.float32)
+                hist_tumor_seg, bins_tumor_seg = np.histogram(tumor_seg_array, bins=655, range=(0, 65536))
 
-            # Plot histograms using Seaborn
-            #sns.lineplot(x=bins_nii[1:-1], y=hist_nii[1:], color='white', linewidth=1, label='Brain')
-            sns.lineplot(x=bins_nii[1:-1], y=hist_tumor_seg[1:], color='red', linewidth=1, label='Tumor')
+                # Fill in the list with data from tumor segmentation
+                tumor_seg_data.append(hist_tumor_seg)
+                tumor_seg_data.append(bins_tumor_seg)
 
-            # Labels and title
-            plt.xlabel('Voxel Intensity', color='white')
-            plt.ylabel('Frequency', color='white')
-            plt.title('Histogram of Voxel Intensities (Rescaled)', color='white')
-            plt.legend(loc='upper right')
+            elif user_ans_MRI in nii_file:
+                nii_file_name = nii_file.split('.')[0] # you need to remove rescaled from the name as well
+                nii_path = os.path.join(array_dir, nii_file)
+                nii_array = np.load(nii_path).astype(np.float32)
+                hist_nii, bins_nii = np.histogram(nii_array, bins=655, range=(0, 65536))
+                mri_data[nii_file_name] = hist_nii
+        print(tumor_seg_data)
+        print(mri_data)
+        # Use Seaborn's dark style
+        sns.set_style("dark")
+        plt.figure(figsize=(10, 6), facecolor='black')
 
-            # Set dark background
-            plt.gca().set_facecolor('black')
-            plt.tick_params(axis='both', colors='white')
-            plt.grid(True, linestyle='--', linewidth=0.5, color='gray')
+        # Plot histograms using Seaborn
+        hist_tumor_seg = tumor_seg_data[0]
+        bins_nii = tumor_seg_data[0]
+        #sns.lineplot(x=bins_nii[1:-1], y=hist_nii[1:], color='white', linewidth=1, label='Brain')
+        sns.lineplot(x=bins_nii[1:-1], y=hist_tumor_seg[1:], color='red', linewidth=1, label='Tumor')
 
-            # Show plot
-            plt.show()
+        # Labels and title
+        plt.xlabel('Voxel Intensity', color='white')
+        plt.ylabel('Frequency', color='white')
+        plt.title('Histogram of Voxel Intensities (Rescaled)', color='white')
+        plt.legend(loc='upper right')
+
+        # Set dark background
+        plt.gca().set_facecolor('black')
+        plt.tick_params(axis='both', colors='white')
+        plt.grid(True, linestyle='--', linewidth=0.5, color='gray')
+
+        # Show plot
+        plt.show()
 
         break
 
