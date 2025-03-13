@@ -49,18 +49,20 @@ for folder in os.listdir(NEW_DIR):
         tumor_seg_data = []
         mri_data = {}
         for nii_file in os.listdir(array_dir):
-            if (CONTROL_TUMOR not in nii_file) or (user_ans_MRI not in nii_file):
-                continue
-            elif CONTROL_TUMOR in nii_file:
+            #if (CONTROL_TUMOR not in nii_file) or (user_ans_MRI not in nii_file):
+                #continue
+            if CONTROL_TUMOR in nii_file:
                 tumor_seg_path = os.path.join(array_dir, nii_file)
                 tumor_seg_array = np.load(tumor_seg_path).astype(np.float32)
                 hist_tumor_seg, bins_tumor_seg = np.histogram(tumor_seg_array, bins=655, range=(0, 65536))
 
                 # Fill in the list with data from tumor segmentation
-                tumor_seg_data.append(hist_tumor_seg)
-                tumor_seg_data.append(bins_tumor_seg)
+                tumor_seg_data = tumor_seg_data.append(hist_tumor_seg)
+                print("Histogram added to tumor data")
+                tumor_seg_data = tumor_seg_data.append(bins_tumor_seg)
+                print("Bins added to tumr data")
 
-            elif user_ans_MRI in nii_file:
+            if user_ans_MRI in nii_file:
                 nii_file_name = nii_file.split('.')[0] # you need to remove rescaled from the name as well
                 nii_path = os.path.join(array_dir, nii_file)
                 nii_array = np.load(nii_path).astype(np.float32)
