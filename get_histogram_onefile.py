@@ -69,8 +69,6 @@ for folder in os.listdir(NEW_DIR):
                 nii_array = np.load(nii_path).astype(np.float32)
                 hist_nii, bins_nii = np.histogram(nii_array, bins=655, range=(0, 65536))
                 mri_data[nii_file_name] = hist_nii
-        print(tumor_seg_data)
-        print(mri_data)
         # Use Seaborn's dark style
         sns.set_style("dark")
         plt.figure(figsize=(10, 6), facecolor='black')
@@ -79,7 +77,7 @@ for folder in os.listdir(NEW_DIR):
         hist_tumor_seg = tumor_seg_data[0]
         bins_nii = tumor_seg_data[1]
         #sns.lineplot(x=bins_nii[1:-1], y=hist_nii[1:], color='white', linewidth=1, label='Brain')
-        sns.lineplot(x=bins_nii[:-1], y=hist_tumor_seg[1:], color='red', linewidth=1, label='Tumor')
+        sns.lineplot(x=bins_nii[1:-1], y=hist_tumor_seg[1:], color='red', linewidth=1, label='Tumor')
 
         # Labels and title
         plt.xlabel('Voxel Intensity', color='white')
