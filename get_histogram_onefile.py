@@ -22,14 +22,15 @@ def get_user_answer(INPUT_MRI):
     return valid_answers[user_ans]  # Return the correctly formatted value (T1/T1c/T2/FLAIR)
 
 def get_patients_number():
-    patient_number = int(input("Enter patient number: "))
-    # Ensure patient number is within the valid range (1 to 540)
-    while patient_number not in range(1, 541):
-        print("Patients go from 1 to 540")
-        patient_number = int(input("Enter another number: "))
-    # Convert patient number to a string for folder name matching
-    patient_number_str = str(patient_number)
-    return patient_number_str
+    while True:
+        try:
+            patient_number = int(input("Enter patient number: "))
+            if 1 <= patient_number <= 540:
+                return str(patient_number)  # Convert to string for folder matching
+            else:
+                print("Patients go from 1 to 540. Try again.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
 
         
 # Load file
@@ -57,10 +58,10 @@ for folder in os.listdir(NEW_DIR):
                 hist_tumor_seg, bins_tumor_seg = np.histogram(tumor_seg_array, bins=655, range=(0, 65536))
 
                 # Fill in the list with data from tumor segmentation
-                tumor_seg_data = tumor_seg_data.append(hist_tumor_seg)
+                tumor_seg_data.append(hist_tumor_seg)
                 print("Histogram added to tumor data")
-                tumor_seg_data = tumor_seg_data.append(bins_tumor_seg)
-                print("Bins added to tumr data")
+                tumor_seg_data.append(bins_tumor_seg)
+                print("Bins added to tumor data")
 
             if user_ans_MRI in nii_file:
                 nii_file_name = nii_file.split('.')[0] # you need to remove rescaled from the name as well
@@ -76,9 +77,9 @@ for folder in os.listdir(NEW_DIR):
 
         # Plot histograms using Seaborn - Tumor
         hist_tumor_seg = tumor_seg_data[0]
-        bins_nii = tumor_seg_data[0]
+        bins_nii = tumor_seg_data[1]
         #sns.lineplot(x=bins_nii[1:-1], y=hist_nii[1:], color='white', linewidth=1, label='Brain')
-        sns.lineplot(x=bins_nii[1:-1], y=hist_tumor_seg[1:], color='red', linewidth=1, label='Tumor')
+        sns.lineplot(x=bins_nii[:-1], y=hist_tumor_seg[1:], color='red', linewidth=1, label='Tumor')
 
         # Labels and title
         plt.xlabel('Voxel Intensity', color='white')
