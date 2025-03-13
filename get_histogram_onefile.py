@@ -72,7 +72,7 @@ for folder in os.listdir(NEW_DIR):
         sns.set_style("dark")
         plt.figure(figsize=(10, 6), facecolor='black')
 
-        # Plot histograms using Seaborn
+        # Plot histograms using Seaborn - Tumor
         hist_tumor_seg = tumor_seg_data[0]
         bins_nii = tumor_seg_data[0]
         #sns.lineplot(x=bins_nii[1:-1], y=hist_nii[1:], color='white', linewidth=1, label='Brain')
