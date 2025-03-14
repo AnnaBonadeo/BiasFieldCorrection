@@ -35,8 +35,8 @@ def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tum
         # Show plot
         plt.show()
 
-def calculate_all_histograms_mri_type(patient_dir_name_nifti, mri_type:str, display=False, save=False):
-    patient_dir_path = os.path.join(patient_dir_name_nifti)
+def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_type:str, display=False, save=False):
+    patient_dir_path = os.path.join(new_dir_path, 'patient_dir_name_nifti')
     array_dir_path = os.path.join(patient_dir_path, 'array')
     if not os.path.isdir(patient_dir_path):
         print(f"Directory {patient_dir_path} does not exist")
@@ -69,7 +69,7 @@ def calculate_all_histograms_mri_type(patient_dir_name_nifti, mri_type:str, disp
 
 # MAIN
 if __name__ == '__main__':
-    calculate_all_histograms_mri_type('UCSF-PDGM-0344_nifti', 'T2', display=True, save=False)
+    calculate_all_histograms_mri_type(NEW_DIR, 'UCSF-PDGM-0344_nifti', 'T2', display=True, save=False)
 
 
 
