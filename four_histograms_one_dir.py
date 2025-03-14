@@ -43,7 +43,7 @@ def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_
         return
     patient_dir_name = patient_dir_name_nifti.split("_")[0]
 
-    tumor_binary_array_path = os.path.join(array_dir_path, 'tumor_segmentation_array.npy')
+    tumor_binary_array_path = os.path.join(array_dir_path, f'{patient_dir_name}_tumor_segmentation_array.npy')
     tumor_binary_array = np.load(tumor_binary_array_path).astype(np.float32)
 
     mri_n4_brain_name = f'{patient_dir_name}_{mri_type}_N4_brain_rescaled'
