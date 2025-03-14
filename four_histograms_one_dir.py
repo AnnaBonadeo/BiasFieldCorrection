@@ -13,6 +13,7 @@ def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tum
     hist_tumor_n4, bins_tumor_n4 = np.histogram(array_tumor_n4, bins=bins_number, range=(0, 65536))
 
     if display:
+        plt.clf()
         # Set up figure with black background
         plt.figure(figsize=(10, 6), facecolor='black')
 
@@ -34,6 +35,7 @@ def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tum
 
         # Show plot
         plt.show()
+
 
 def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_type:str, display=False, save=False):
     patient_dir_path = os.path.join(new_dir_path, patient_dir_name_nifti)
@@ -69,7 +71,7 @@ def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_
 
 # MAIN
 if __name__ == '__main__':
-    calculate_all_histograms_mri_type(NEW_DIR, 'UCSF-PDGM-0344_nifti', 'T2', display=True, save=False)
+    calculate_all_histograms_mri_type(NEW_DIR, 'UCSF-PDGM-0455_nifti', 'T2', display=True, save=False)
 
 
 
