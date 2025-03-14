@@ -49,7 +49,7 @@ def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_
     mri_n4_brain_name = f'{patient_dir_name}_{mri_type}_N4_brain_rescaled'
     mri_n4_healthy_name = f'{patient_dir_name}_{mri_type}_N4_healthy_mask_rescaled'
     mri_n4_brain_healthy_name = f'{patient_dir_name}_{mri_type}_N4_brain_healthy_mask_rescaled'
-    mri_n4_healthy_brain_name = f'{patient_dir_name}_{mri_type}__N4_healthy_mask_brain_rescaled'
+    mri_n4_healthy_brain_name = f'{patient_dir_name}_{mri_type}_N4_healthy_mask_brain_rescaled'
 
     # Paths of the arrays
     mri_n4_brain_path = os.path.join(array_dir_path, f'{mri_n4_brain_name}.npy')
