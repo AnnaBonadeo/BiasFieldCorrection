@@ -8,7 +8,8 @@ from save_files import NEW_DIR
 
 def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tumor_binary:np.array, bins_number=655, display=False, save=False):
     array_tumor_n4 = array_mri_n4 * array_tumor_binary
-    print(i for i in [j for j in array_tumor_n4] if i > 1)
+    print(i for i in [j for j in array_tumor_binary] if i > 1)
+    print("ciao")
 
     hist_mri_n4, bins_mri_n4 = np.histogram(array_mri_n4, bins=bins_number, range=(0, 65536))
     hist_tumor_n4, bins_tumor_n4 = np.histogram(array_tumor_n4, bins=bins_number, range=(0, 65536))
