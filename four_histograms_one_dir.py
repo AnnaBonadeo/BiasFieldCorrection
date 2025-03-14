@@ -36,7 +36,7 @@ def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tum
         plt.show()
 
 def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_type:str, display=False, save=False):
-    patient_dir_path = os.path.join(new_dir_path, 'patient_dir_name_nifti')
+    patient_dir_path = os.path.join(new_dir_path, patient_dir_name_nifti)
     array_dir_path = os.path.join(patient_dir_path, 'array')
     if not os.path.isdir(patient_dir_path):
         print(f"Directory {patient_dir_path} does not exist")
