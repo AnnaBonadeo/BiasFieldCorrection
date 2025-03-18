@@ -48,7 +48,7 @@ def calculate_tumor_histogram(mri_n4_fname: str, array_mri_n4: np.array, array_t
     # Labels and title in white
     ax.set_xlabel('Voxel Intensity', color='black')
     ax.set_ylabel('Frequency', color='black')
-    ax.set_title(f'Histogram of Voxel Intensities (Rescaled) \n {mri_n4_fname}', color='black')
+    ax.set_title(f'Voxel Intensities (Rescaled): {mri_n4_fname}', color='black')
 
     # Grid with dashed white lines
     ax.grid(True, linestyle='--', linewidth=0.5, color='gray')
@@ -60,7 +60,7 @@ def calculate_tumor_histogram(mri_n4_fname: str, array_mri_n4: np.array, array_t
     return ax  # Return the axis for future customization
 
 
-def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_type:str, display=False, save=False):
+def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_type:str, patient_number, display=False, save=False):
     patient_dir_path = os.path.join(new_dir_path, patient_dir_name_nifti)
     array_dir_path = os.path.join(patient_dir_path, 'array')
     if not os.path.isdir(patient_dir_path):
@@ -87,17 +87,22 @@ def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_
     mri_n4_brain_healthy_array = np.load(mri_n4_brain_healthy_path).astype(np.float32)
     mri_n4_healthy_brain_array = np.load(mri_n4_healthy_brain_path).astype(np.float32)
 
+    mri_n4_brain_nameplot = f'Patient {patient_number}: N4 w Brain on Brain'
+    mri_n4_healthy_nameplot = f'Patient {patient_number}: N4 w Healthy Brain on Healthy Brain'
+    mri_n4_brain_healthy_nameplot = f'Patient {patient_number}: N4 w Brain on Healthy Brain'
+    mri_n4_healthy_brain_nameplot = f'Patient {patient_number}: N4 w Healthy Brain on Brain'
+
     fig, axs = plt.subplots(2, 2, figsize=(12,10))
-    calculate_tumor_histogram(mri_n4_brain_name,mri_n4_brain_array,tumor_binary_array, display=display, save=save, ax = axs[0,0])
-    calculate_tumor_histogram(mri_n4_healthy_name,mri_n4_healthy_array,tumor_binary_array, display=display, save=save, ax = axs[0,1])
-    calculate_tumor_histogram(mri_n4_brain_healthy_name,mri_n4_brain_healthy_array,tumor_binary_array, display=display, save=save, ax = axs[1,0])
-    calculate_tumor_histogram(mri_n4_healthy_brain_name,mri_n4_healthy_brain_array,tumor_binary_array, display=display, save=save, ax = axs[1,1])
+    calculate_tumor_histogram(mri_n4_brain_nameplot,mri_n4_brain_array,tumor_binary_array, display=display, save=save, ax = axs[0,0])
+    calculate_tumor_histogram(mri_n4_healthy_nameplot,mri_n4_healthy_array,tumor_binary_array, display=display, save=save, ax = axs[0,1])
+    calculate_tumor_histogram(mri_n4_brain_healthy_nameplot,mri_n4_brain_healthy_array,tumor_binary_array, display=display, save=save, ax = axs[1,0])
+    calculate_tumor_histogram(mri_n4_healthy_brain_nameplot,mri_n4_healthy_brain_array,tumor_binary_array, display=display, save=save, ax = axs[1,1])
 
 # MAIN
 if __name__ == '__main__':
     mri_type = get_user_answer(INPUT_MRI)
     patient_number = get_patients_number()
-    calculate_all_histograms_mri_type(NEW_DIR, f'UCSF-PDGM-0{patient_number}_nifti', mri_type, display=True, save=False)
+    calculate_all_histograms_mri_type(NEW_DIR, f'UCSF-PDGM-0{patient_number}_nifti', mri_type, patient number, display=True, save=False)
     plt.tight_layout()
     plt.show()
 
