@@ -4,12 +4,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from save_files import NEW_DIR
+from get_histogram_onefile import get_user_answer,get_patients_number, INPUT_MRI
+
 
 
 def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tumor_binary:np.array, bins_number=655, display=False, save=False):
     array_tumor_n4 = array_mri_n4 * array_tumor_binary
-    print(i for i in [j for j in array_tumor_binary] if i > 1)
-    print("ciao")
 
     hist_mri_n4, bins_mri_n4 = np.histogram(array_mri_n4, bins=bins_number, range=(0, 65536))
     hist_tumor_n4, bins_tumor_n4 = np.histogram(array_tumor_n4, bins=bins_number, range=(0, 65536))
@@ -34,9 +34,9 @@ def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tum
         # Set dark background for the plot
         plt.gca().set_facecolor('black')
         plt.tick_params(axis='both', colors='white')  # White ticks
-
+        plt.legend()
         # Show plot
-        plt.show()
+        plt.show(block = False)
 
 
 def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_type:str, display=False, save=False):
@@ -73,7 +73,9 @@ def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_
 
 # MAIN
 if __name__ == '__main__':
-    calculate_all_histograms_mri_type(NEW_DIR, 'UCSF-PDGM-0455_nifti', 'T2', display=True, save=False)
-
+    mri_type = get_user_answer(INPUT_MRI)
+    patient_number = get_patients_number()
+    calculate_all_histograms_mri_type(NEW_DIR, f'UCSF-PDGM-{patient_number}_nifti', mri_type, display=True, save=False)
+    plt.show()
 
 
