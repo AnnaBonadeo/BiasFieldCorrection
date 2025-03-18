@@ -4,9 +4,31 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from save_files import NEW_DIR
-from get_histogram_onefile import get_user_answer,get_patients_number, INPUT_MRI
+INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
 
 
+def get_user_answer(INPUT_MRI):
+    user_ans = input("Enter the MRI image to analyze: ").strip().lower()
+
+    # Normalize input list to lowercase for comparison
+    valid_answers = {mri.lower(): mri for mri in INPUT_MRI}
+
+    while user_ans not in valid_answers:
+        print("Invalid input. Please try again.")
+        user_ans = input("Enter the MRI image to analyze: ").strip().lower()
+
+    return valid_answers[user_ans]  # Return the correctly formatted value (T1/T1c/T2/FLAIR)
+
+def get_patients_number():
+    while True:
+        try:
+            patient_number = int(input("Enter patient number: "))
+            if 1 <= patient_number <= 540:
+                return str(patient_number)  # Convert to string for folder matching
+            else:
+                print("Patients go from 1 to 540. Try again.")
+        except ValueError:
+            print("Invalid input. Please enter a number.")
 
 def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tumor_binary:np.array, bins_number=655, display=False, save=False):
     array_tumor_n4 = array_mri_n4 * array_tumor_binary
