@@ -36,7 +36,7 @@ def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tum
         plt.tick_params(axis='both', colors='white')  # White ticks
         plt.legend()
         # Show plot
-        plt.show(block = False)
+        plt.show()
 
 
 def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_type:str, display=False, save=False):
@@ -76,6 +76,6 @@ if __name__ == '__main__':
     mri_type = get_user_answer(INPUT_MRI)
     patient_number = get_patients_number()
     calculate_all_histograms_mri_type(NEW_DIR, f'UCSF-PDGM-{patient_number}_nifti', mri_type, display=True, save=False)
-    plt.show()
+
 
 
