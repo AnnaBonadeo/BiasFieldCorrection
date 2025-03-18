@@ -103,15 +103,15 @@ def continue_main_for_new_patient(NEW_DIR, folder_name, mri_type, patient_number
     user_ans = input('Would you like to continue for another patient? (Y/N)').upper()
     while user_ans not in USER_CHOICE:
         user_ans = input('Invalid input. Please insert again: ').upper()
-    if user_ans == 'Y':
+    while user_ans == 'Y':
         mri_type = get_user_answer(INPUT_MRI)
         patient_number = get_patients_number()
         calculate_all_histograms_mri_type(NEW_DIR, f'UCSF-PDGM-0{patient_number}_nifti', mri_type, patient_number,
                                           display=True, save=False)
         plt.tight_layout()
         plt.show()
-    else:
-        print('Goodbye!')
+
+    print('Goodbye!')
 # MAIN
 if __name__ == '__main__':
     mri_type = get_user_answer(INPUT_MRI)
