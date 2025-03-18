@@ -5,8 +5,12 @@ import matplotlib.pyplot as plt
 
 from save_files import NEW_DIR
 INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
-USER_CHOICE = 'YN'
 
+def user_continue_ans(user_choice:str):
+    user_ans = input('Would you like to continue for another patient? (Y/N)').upper()
+    while user_ans not in user_choice:
+        user_ans = input('Invalid input. Please insert again: ').upper()
+    return user_ans
 
 def get_user_answer(INPUT_MRI):
     user_ans = input("Enter the MRI image to analyze: ").strip().lower()
@@ -100,9 +104,7 @@ def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_
     calculate_tumor_histogram(mri_n4_healthy_brain_nameplot,mri_n4_healthy_brain_array,tumor_binary_array, display=display, save=save, ax = axs[1,1])
 
 def continue_main_for_new_patient(NEW_DIR, folder_name, mri_type, patient_number, display=True, save=False):
-    user_ans = input('Would you like to continue for another patient? (Y/N)').upper()
-    while user_ans not in USER_CHOICE:
-        user_ans = input('Invalid input. Please insert again: ').upper()
+    user_ans = user_continue_ans('YN')
     while user_ans == 'Y':
         mri_type = get_user_answer(INPUT_MRI)
         patient_number = get_patients_number()
@@ -110,6 +112,7 @@ def continue_main_for_new_patient(NEW_DIR, folder_name, mri_type, patient_number
                                           display=True, save=False)
         plt.tight_layout()
         plt.show()
+        user_ans = user_continue_ans('YN')
 
     print('Goodbye!')
 # MAIN
