@@ -57,7 +57,7 @@ def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tum
         plt.gca().set_facecolor('black')
         plt.tick_params(axis='both', colors='white')  # White ticks
         # Show plot
-        plt.show()
+        #plt.show()
 
 
 def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_type:str, display=False, save=False):
@@ -87,11 +87,12 @@ def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_
     mri_n4_brain_healthy_array = np.load(mri_n4_brain_healthy_path).astype(np.float32)
     mri_n4_healthy_brain_array = np.load(mri_n4_healthy_brain_path).astype(np.float32)
 
-    calculate_tumor_histogram(mri_n4_brain_name,mri_n4_brain_array,tumor_binary_array, display=display, save=save)
-    calculate_tumor_histogram(mri_n4_healthy_name,mri_n4_healthy_array,tumor_binary_array, display=display, save=save)
-    calculate_tumor_histogram(mri_n4_brain_healthy_name,mri_n4_brain_healthy_array,tumor_binary_array, display=display, save=save)
-    calculate_tumor_histogram(mri_n4_healthy_brain_name,mri_n4_healthy_brain_array,tumor_binary_array, display=display, save=save)
-
+    fig, axs = plt.subplots(2, 2)
+    axs[0,0] = calculate_tumor_histogram(mri_n4_brain_name,mri_n4_brain_array,tumor_binary_array, display=display, save=save)
+    axs[0,1] = calculate_tumor_histogram(mri_n4_healthy_name,mri_n4_healthy_array,tumor_binary_array, display=display, save=save)
+    axs[1,0] = calculate_tumor_histogram(mri_n4_brain_healthy_name,mri_n4_brain_healthy_array,tumor_binary_array, display=display, save=save)
+    axs[1,1] = calculate_tumor_histogram(mri_n4_healthy_brain_name,mri_n4_healthy_brain_array,tumor_binary_array, display=display, save=save)
+    plt.show()
 # MAIN
 if __name__ == '__main__':
     mri_type = get_user_answer(INPUT_MRI)
