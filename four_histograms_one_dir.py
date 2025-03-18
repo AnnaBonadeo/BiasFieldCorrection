@@ -46,16 +46,16 @@ def calculate_tumor_histogram(mri_n4_fname: str, array_mri_n4: np.array, array_t
     ax.plot(bins_tumor_n4[1:-1], hist_tumor_n4[1:], color='yellow', linewidth=1)
 
     # Labels and title in white
-    ax.set_xlabel('Voxel Intensity', color='white')
-    ax.set_ylabel('Frequency', color='white')
-    ax.set_title(f'Histogram of Voxel Intensities (Rescaled) \n {mri_n4_fname}', color='white')
+    ax.set_xlabel('Voxel Intensity', color='black')
+    ax.set_ylabel('Frequency', color='black')
+    ax.set_title(f'Histogram of Voxel Intensities (Rescaled) \n {mri_n4_fname}', color='black')
 
     # Grid with dashed white lines
     ax.grid(True, linestyle='--', linewidth=0.5, color='gray')
 
     # Set dark background for the plot
     ax.set_facecolor('black')
-    ax.tick_params(axis='both', colors='white')  # White ticks
+    ax.tick_params(axis='both', colors='black')  # White ticks
 
     return ax  # Return the axis for future customization
 
