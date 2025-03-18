@@ -30,34 +30,34 @@ def get_patients_number():
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tumor_binary:np.array, bins_number=655, display=False, save=False):
+
+def calculate_tumor_histogram(mri_n4_fname: str, array_mri_n4: np.array, array_tumor_binary: np.array, bins_number=655,
+                              display=False, save=False, ax=None):
     array_tumor_n4 = array_mri_n4 * array_tumor_binary
 
     hist_mri_n4, bins_mri_n4 = np.histogram(array_mri_n4, bins=bins_number, range=(0, 65536))
     hist_tumor_n4, bins_tumor_n4 = np.histogram(array_tumor_n4, bins=bins_number, range=(0, 65536))
 
-    if display:
-        # plt.clf()
-        # Set up figure with black background
-        plt.figure(figsize=(10, 6), facecolor='black')
+    if ax is None:  # If no axes provided, create a new plot
+        fig, ax = plt.subplots()
 
-        # Plot histogram with white lines
-        plt.plot(bins_mri_n4[1:-1], hist_tumor_n4[1:], color='pink', linewidth=1)
-        plt.plot(bins_tumor_n4[1:-1], hist_mri_n4[1:], color='yellow', linewidth=1)
+    # Plot histograms on the provided axis
+    ax.plot(bins_mri_n4[1:-1], hist_mri_n4[1:], color='pink', linewidth=1)
+    ax.plot(bins_tumor_n4[1:-1], hist_tumor_n4[1:], color='yellow', linewidth=1)
 
-        # Labels and title in white
-        plt.xlabel('Voxel Intensity', color='white')
-        plt.ylabel('Frequency', color='white')
-        plt.title(f'Histogram of Voxel Intensities (Rescaled) \n {mri_n4_fname}', color='white')
+    # Labels and title in white
+    ax.set_xlabel('Voxel Intensity', color='white')
+    ax.set_ylabel('Frequency', color='white')
+    ax.set_title(f'Histogram of Voxel Intensities (Rescaled) \n {mri_n4_fname}', color='white')
 
-        # Grid with dashed white lines
-        plt.grid(True, linestyle='--', linewidth=0.5, color='gray')
+    # Grid with dashed white lines
+    ax.grid(True, linestyle='--', linewidth=0.5, color='gray')
 
-        # Set dark background for the plot
-        plt.gca().set_facecolor('black')
-        plt.tick_params(axis='both', colors='white')  # White ticks
-        # Show plot
-        #plt.show()
+    # Set dark background for the plot
+    ax.set_facecolor('black')
+    ax.tick_params(axis='both', colors='white')  # White ticks
+
+    return ax  # Return the axis for future customization
 
 
 def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_type:str, display=False, save=False):
@@ -87,12 +87,12 @@ def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_
     mri_n4_brain_healthy_array = np.load(mri_n4_brain_healthy_path).astype(np.float32)
     mri_n4_healthy_brain_array = np.load(mri_n4_healthy_brain_path).astype(np.float32)
 
-    fig, axs = plt.subplots(2, 2)
-    axs[0,0] = calculate_tumor_histogram(mri_n4_brain_name,mri_n4_brain_array,tumor_binary_array, display=display, save=save)
-    axs[0,1] = calculate_tumor_histogram(mri_n4_healthy_name,mri_n4_healthy_array,tumor_binary_array, display=display, save=save)
-    axs[1,0] = calculate_tumor_histogram(mri_n4_brain_healthy_name,mri_n4_brain_healthy_array,tumor_binary_array, display=display, save=save)
-    axs[1,1] = calculate_tumor_histogram(mri_n4_healthy_brain_name,mri_n4_healthy_brain_array,tumor_binary_array, display=display, save=save)
-    plt.show()
+    fig, axs = plt.subplots(2, 2, figsize=(12, 8))
+    calculate_tumor_histogram(mri_n4_brain_name,mri_n4_brain_array,tumor_binary_array, display=display, save=save, ax = [0,0])
+    calculate_tumor_histogram(mri_n4_healthy_name,mri_n4_healthy_array,tumor_binary_array, display=display, save=save, ax = [0,1])
+    calculate_tumor_histogram(mri_n4_brain_healthy_name,mri_n4_brain_healthy_array,tumor_binary_array, display=display, save=save, ax = [1,0])
+    calculate_tumor_histogram(mri_n4_healthy_brain_name,mri_n4_healthy_brain_array,tumor_binary_array, display=display, save=save, ax = [1,1])
+
 # MAIN
 if __name__ == '__main__':
     mri_type = get_user_answer(INPUT_MRI)
