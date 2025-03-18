@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 
 from save_files import NEW_DIR
 INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
+USER_CHOICE = 'YN'
 
 
 def get_user_answer(INPUT_MRI):
@@ -98,6 +99,19 @@ def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_
     calculate_tumor_histogram(mri_n4_brain_healthy_nameplot,mri_n4_brain_healthy_array,tumor_binary_array, display=display, save=save, ax = axs[1,0])
     calculate_tumor_histogram(mri_n4_healthy_brain_nameplot,mri_n4_healthy_brain_array,tumor_binary_array, display=display, save=save, ax = axs[1,1])
 
+def continue_main_for_new_patient(NEW_DIR, folder_name, mri_type, patient_number, display=True, save=False):
+    user_ans = input('Would you like to continue for another patient? (Y/N)').upper()
+    while user_ans not in USER_CHOICE:
+        user_ans = input('Invalid input. Please insert again: ').upper()
+    if user_ans == 'Y':
+        mri_type = get_user_answer(INPUT_MRI)
+        patient_number = get_patients_number()
+        calculate_all_histograms_mri_type(NEW_DIR, f'UCSF-PDGM-0{patient_number}_nifti', mri_type, patient_number,
+                                          display=True, save=False)
+        plt.tight_layout()
+        plt.show()
+    else:
+        print('Goodbye!')
 # MAIN
 if __name__ == '__main__':
     mri_type = get_user_answer(INPUT_MRI)
@@ -105,5 +119,6 @@ if __name__ == '__main__':
     calculate_all_histograms_mri_type(NEW_DIR, f'UCSF-PDGM-0{patient_number}_nifti', mri_type, patient_number, display=True, save=False)
     plt.tight_layout()
     plt.show()
+    continue_main_for_new_patient(NEW_DIR, f'UCSF-PDGM-0{patient_number}_nifti', mri_type, patient_number, display=True, save=False)
 
 
