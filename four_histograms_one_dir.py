@@ -37,12 +37,12 @@ def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tum
     hist_tumor_n4, bins_tumor_n4 = np.histogram(array_tumor_n4, bins=bins_number, range=(0, 65536))
 
     if display:
-        plt.clf()
+        # plt.clf()
         # Set up figure with black background
         plt.figure(figsize=(10, 6), facecolor='black')
 
         # Plot histogram with white lines
-        plt.plot(bins_mri_n4[1:-1], hist_mri_n4[1:], color='pink', linewidth=1)
+        plt.plot(bins_mri_n4[1:-1], hist_tumor_n4[1:], color='pink', linewidth=1)
         plt.plot(bins_tumor_n4[1:-1], hist_mri_n4[1:], color='yellow', linewidth=1)
 
         # Labels and title in white
@@ -56,7 +56,6 @@ def calculate_tumor_histogram(mri_n4_fname:str, array_mri_n4:np.array, array_tum
         # Set dark background for the plot
         plt.gca().set_facecolor('black')
         plt.tick_params(axis='both', colors='white')  # White ticks
-        plt.legend()
         # Show plot
         plt.show()
 
