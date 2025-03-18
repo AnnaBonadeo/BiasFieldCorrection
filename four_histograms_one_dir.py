@@ -87,7 +87,7 @@ def calculate_all_histograms_mri_type(new_dir_path, patient_dir_name_nifti, mri_
     mri_n4_brain_healthy_array = np.load(mri_n4_brain_healthy_path).astype(np.float32)
     mri_n4_healthy_brain_array = np.load(mri_n4_healthy_brain_path).astype(np.float32)
 
-    fig, axs = plt.subplots(2, 2, figsize=(12, 8))
+    fig, axs = plt.subplots(2, 2, figsize=(12,10))
     calculate_tumor_histogram(mri_n4_brain_name,mri_n4_brain_array,tumor_binary_array, display=display, save=save, ax = axs[0,0])
     calculate_tumor_histogram(mri_n4_healthy_name,mri_n4_healthy_array,tumor_binary_array, display=display, save=save, ax = axs[0,1])
     calculate_tumor_histogram(mri_n4_brain_healthy_name,mri_n4_brain_healthy_array,tumor_binary_array, display=display, save=save, ax = axs[1,0])
