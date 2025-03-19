@@ -42,7 +42,9 @@ def calculate_tumor_histogram(mri_n4_fname: str, array_mri_n4: np.array, array_t
 
     hist_mri_n4, bins_mri_n4 = np.histogram(array_mri_n4, bins=bins_number, range=(0, 65536))
     hist_tumor_n4, bins_tumor_n4 = np.histogram(array_tumor_n4, bins=bins_number, range=(0, 65536))
-
+    print('Checking tumor area')
+    area_tumor = sum(np.diff(bins_tumor_n4) * hist_tumor_n4)
+    print(area_tumor)
     if ax is None:  # If no axes provided, create a new plot
         fig, ax = plt.subplots()
 
