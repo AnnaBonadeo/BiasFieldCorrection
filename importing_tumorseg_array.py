@@ -4,7 +4,7 @@ import multiprocessing
 import os
 from save_files import CONTROL1, NEW_DIR
 
-CONTROL_TUMOR = "tumor_segmentation"
+CONTROL_TUMOR = "tumor_binary"
 
 def get_array_tumor_seg(folder_name, subfolder_dir, array_dir, nii_file):
     if nii_file.startswith(folder_name) and CONTROL_TUMOR in nii_file:
