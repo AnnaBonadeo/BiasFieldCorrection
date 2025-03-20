@@ -17,7 +17,7 @@ def rescale_to_16bit(array, epsilon=1e-6):
     return (65535 * (array - old_min) / (old_max - old_min)).astype(np.uint16)
 
 def get_arrays_for_patient(folder_name, subfolder_dir, array_dir, nii_file):
-    if nii_file.startswith(folder_name):  # exclude the biasfields
+    if nii_file.startswith(f'biasfield_{folder_name}'):  # original file corrected to not exclude the biasfields
         if nii_file.endswith("_dn.nii.gz"):  # Exclude _dn.nii.gz files
             print(f"Skipping file: {nii_file} (ends with _dn.nii.gz)")
             return  # Skip processing
@@ -28,7 +28,7 @@ def get_arrays_for_patient(folder_name, subfolder_dir, array_dir, nii_file):
         img = nib.load(os.path.join(subfolder_dir, nii_file))
         img_array = img.get_fdata()
         rescaled_array = rescale_to_16bit(img_array) # Convert to 16-bit integer
-        rescaled_array_path = os.path.join(array_dir, f"{nii_file_name}_rescaled.npy")
+        rescaled_array_path = os.path.join(array_dir, f"biasfield_{nii_file_name}_rescaled.npy")
         np.save(rescaled_array_path, rescaled_array)
     print(f"Arrays saved successfully for {subfolder_dir} to {array_dir}")
 
@@ -41,7 +41,7 @@ def process_folder(folder):
     if os.path.isdir(folder_path) and folder.startswith(CONTROL1):
         print(f"Processing folder: {folder}")
 
-        anat_dir = os.path.join(folder_path, "anat")
+        # anat_dir = os.path.join(folder_path, "anat")
         reg_dir = os.path.join(folder_path, "reg")
         array_dir = os.path.join(folder_path, "array")
         # Ensure directories exist
@@ -52,9 +52,9 @@ def process_folder(folder):
         print("Processing reg directory")
         for nii_file in os.listdir(reg_dir):
             get_arrays_for_patient(folder_name, reg_dir, array_dir, nii_file)
-        print("Processing anat directory")
+        """print("Processing anat directory")
         for nii_file in os.listdir(anat_dir):
-            get_arrays_for_patient(folder_name, anat_dir, array_dir, nii_file)
+            get_arrays_for_patient(folder_name, anat_dir, array_dir, nii_file)"""
 
 # MAIN PIPELINE
 folders = os.listdir(NEW_DIR)
