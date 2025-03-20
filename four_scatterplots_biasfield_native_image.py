@@ -37,7 +37,7 @@ def get_patients_number():
 def calculate_scatterplot_biasfield_native(native_mri_array:np.array,biasfield_array:np.array, mri_fname:str, display = False, save = False, ax = None):
     shape_native = np.shape(native_mri_array)
     shape_biasfield = np.shape(biasfield_array)
-    print("Native ", shape_native), "Biasfield ", shape_biasfield)
+    print("Native ", shape_native, "Biasfield ", shape_biasfield)
 
     if ax is None:
         fig, ax = plt.subplots()
