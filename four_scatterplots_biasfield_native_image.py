@@ -2,7 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-from save_files import NEW_DIR
+NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
 
 def user_continue_ans(user_choice:str):
