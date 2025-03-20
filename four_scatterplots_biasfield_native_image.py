@@ -58,8 +58,8 @@ def calculate_scatterplot_biasfield_native(mri_fname, native_mri_array:np.array,
     ax.scatter(sampled_native_mri_array, sampled_biasfield_array, s = 1, alpha = 0.5)
 
     # Labels and title in white
-    ax.set_xlabel('Biasfield intensities', color='black')
-    ax.set_ylabel('Native MRI intensities', color='black')
+    ax.set_xlabel('Native MRI intensities', color='black')
+    ax.set_ylabel('Biasfield intensities', color='black')
     ax.set_title(f'Scatterplot of Intensities (Rescaled): {mri_fname}', color='black')
 
     # Grid with dashed white lines
