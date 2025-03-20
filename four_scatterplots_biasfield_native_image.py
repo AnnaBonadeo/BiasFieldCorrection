@@ -97,7 +97,7 @@ def continue_main_for_new_patient(NEW_DIR, folder_name, mri_type, patient_number
     while user_ans == 'Y':
         mri_type = get_user_answer(INPUT_MRI)
         patient_number = get_patients_number()
-        compute_all_scatterplots_mri_type(NEW_DIR, f'UCSF-PDGM-0{patient_number}_nifti', mri_type, patient_number,
+        compute_all_scatterplots_mri_type(NEW_DIR, f'UCSF-PDGM-{patient_number}_nifti', mri_type, patient_number,
                                               display=True, save=False)
         plt.tight_layout()
         plt.show()
