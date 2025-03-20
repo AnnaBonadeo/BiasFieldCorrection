@@ -35,13 +35,27 @@ def get_patients_number():
             print("Invalid input. Please enter a number.")
 
 def calculate_scatterplot_biasfield_native(mri_fname, native_mri_array:np.array,biasfield_array:np.array,display = False, save = False, ax = None):
+    # Let's try sampling to see if the plot works
+    # Determine the number of points to sample (e.g., 10% of the total data)
     shape_native = np.shape(native_mri_array)
     shape_biasfield = np.shape(biasfield_array)
     print("Native ", shape_native, "Biasfield ", shape_biasfield)
+    num_points = len(native_mri_array)
+    fraction = 0.1  # 10% of the data
+    sample_size = int(num_points * fraction)
+
+    # Randomly sample indices (make sure to not replace, i.e., no duplicates)
+    indices = np.random.choice(num_points, sample_size, replace=False)
+
+    # Use the sampled indices to select corresponding points from both arrays
+    sampled_native_mri_array = native_mri_array[indices]
+    sampled_biasfield_array = biasfield_array[indices]
 
     if ax is None:
         fig, ax = plt.subplots()
-    ax.scatter(native_mri_array,biasfield_array, s=1, alpha=0.5)
+    #ax.scatter(native_mri_array,biasfield_array, s=1, alpha=0.5)
+    # Plot the sampled points
+    ax.scatter(sampled_native_mri_array, sampled_biasfield_array, s = 1, alpha = 0.5)
 
     # Labels and title in white
     ax.set_xlabel('Biasfield intensities', color='black')
