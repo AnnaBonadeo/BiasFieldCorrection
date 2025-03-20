@@ -34,18 +34,7 @@ def get_patients_number():
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-def rescale_to_16bit(array, epsilon=1e-6):
-    """Rescales a NumPy array to the range [0, 65535] (16-bit), handling constant arrays safely."""
-    old_min, old_max = np.min(array), np.max(array)
-
-    if old_max - old_min < epsilon:  # Check if the range is too small (constant image)
-        return np.full_like(array, 32767, dtype=np.uint16)  # Set to mid-range instead of zero
-
-    return (65535 * (array - old_min) / (old_max - old_min)).astype(np.uint16)
-
 def calculate_scatterplot_biasfield_native(native_mri_array:np.array,biasfield_array:np.array, mri_fname:str, display = False, save = False, ax = None):
-    # Rescale the native mri
-    native_mri_array = rescale_to_16bit(native_mri_array)
     if ax is None:
         fig, ax = plt.subplots()
     ax.scatter(native_mri_array,biasfield_array)
