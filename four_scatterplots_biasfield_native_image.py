@@ -35,6 +35,8 @@ def get_patients_number():
             print("Invalid input. Please enter a number.")
 
 def calculate_scatterplot_biasfield_native(native_mri_array:np.array,biasfield_array:np.array, mri_fname:str, display = False, save = False, ax = None):
+    native_mri_array = native_mri_array.flatten()
+    biasfield_array = biasfield_array.flatten()
     if ax is None:
         fig, ax = plt.subplots()
     ax.scatter(native_mri_array,biasfield_array)
