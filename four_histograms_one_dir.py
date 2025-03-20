@@ -29,12 +29,11 @@ def get_patients_number():
         try:
             patient_number = int(input("Enter patient number: "))
             if 1 <= patient_number <= 540:
-                return str(patient_number)  # Convert to string for folder matching
+                return str(patient_number).zfill(4)  # Ensures 4-digit formatting
             else:
                 print("Patients go from 1 to 540. Try again.")
         except ValueError:
             print("Invalid input. Please enter a number.")
-
 
 def calculate_tumor_histogram(mri_n4_fname: str, array_mri_n4: np.array, array_tumor_binary: np.array, bins_number=655,
                               display=False, save=False, ax=None):
