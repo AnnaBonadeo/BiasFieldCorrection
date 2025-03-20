@@ -45,7 +45,7 @@ def process_folder(folder):
         reg_dir = os.path.join(folder_path, "reg")
         array_dir = os.path.join(folder_path, "array")
         # Ensure directories exist
-        os.makedirs(anat_dir, exist_ok=True)
+        #os.makedirs(anat_dir, exist_ok=True)
         os.makedirs(reg_dir, exist_ok=True)
         os.makedirs(array_dir, exist_ok=True)
 
