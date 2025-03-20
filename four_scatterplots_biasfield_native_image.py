@@ -41,7 +41,7 @@ def calculate_scatterplot_biasfield_native(mri_fname, native_mri_array:np.array,
 
     if ax is None:
         fig, ax = plt.subplots()
-    ax.scatter(native_mri_array,biasfield_array)
+    ax.scatter(native_mri_array,biasfield_array, s=1, alpha=0.5)
 
     # Labels and title in white
     ax.set_xlabel('Biasfield intensities', color='black')
