@@ -48,6 +48,9 @@ def get_scatterplot_with_densities(x:np.array, y:np.array):
 
 
 def calculate_scatterplot_biasfield_native(mri_fname, native_mri_array:np.array,biasfield_array:np.array,display = False, save = False, ax = None):
+    # Flatten the arrays to 1D for proper sampling
+    native_mri_array = native_mri_array.ravel()
+    biasfield_array = biasfield_array.ravel()
     # Let's try sampling to see if the plot works
     # Determine the number of points to sample (e.g., 10% of the total data)
     shape_native = np.shape(native_mri_array)
