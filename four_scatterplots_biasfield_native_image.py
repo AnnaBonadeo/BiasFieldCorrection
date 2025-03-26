@@ -37,6 +37,8 @@ def get_patients_number():
             print("Invalid input. Please enter a number.")
 
 def get_scatterplot_with_densities(x:np.array, y:np.array):
+    x = x.ravel()
+    y = y.ravel()
     # Calculate the point density
     xy = np.vstack([x, y])
     z = gaussian_kde(xy)(xy)
@@ -48,26 +50,19 @@ def get_scatterplot_with_densities(x:np.array, y:np.array):
 
 
 def calculate_scatterplot_biasfield_native(mri_fname, native_mri_array:np.array,biasfield_array:np.array,display = False, save = False, ax = None):
-    # Flatten the arrays to 1D for proper sampling
-    native_mri_array = native_mri_array.ravel()
-    biasfield_array = biasfield_array.ravel()
-    # Let's try sampling to see if the plot works
-    # Determine the number of points to sample (e.g., 10% of the total data)
+    # Checking sizes
     shape_native = np.shape(native_mri_array)
     shape_biasfield = np.shape(biasfield_array)
     print("Native ", shape_native, "Biasfield ", shape_biasfield)
 
     # SAMPLING for better visualization
-    num_points = len(native_mri_array)
-    fraction = 0.1  # 10% of the data
-    sample_size = int(num_points * fraction)
+    # Create a single mask (Boolean) that will be applied to both arrays
+    sampling_rate = 0.1  # 10% sampling
+    mask = np.random.rand(*native_mri_array.shape) < sampling_rate  # ✅ Same mask for both
 
-    # Randomly sample indices (make sure to not replace, i.e., no duplicates)
-    indices = np.random.choice(num_points, sample_size, replace=False)
-
-    # Use the sampled indices to select corresponding points from both arrays
-    sampled_native_mri_array = native_mri_array[indices]
-    sampled_biasfield_array = biasfield_array[indices]
+    # Apply the same mask to both arrays
+    sampled_native_mri_array = native_mri_array[mask]  # ✅ Corresponding values
+    sampled_biasfield_array = biasfield_array[mask]  # ✅ Corresponding values
 
     if ax is None:
         fig, ax = plt.subplots()
