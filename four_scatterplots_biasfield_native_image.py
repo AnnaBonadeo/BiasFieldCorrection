@@ -68,7 +68,7 @@ def calculate_scatterplot_biasfield_native(mri_fname, native_mri_array:np.array,
 
     # SAMPLING for better visualization
     # Create a single mask (Boolean) that will be applied to both arrays
-    sampling_rate = 0.1  # 10% sampling
+    sampling_rate = 0.5  # 10% sampling
     mask = np.random.rand(*native_mri_array.shape) < sampling_rate  # ✅ Same mask for both
 
     # Apply the same mask to both arrays
