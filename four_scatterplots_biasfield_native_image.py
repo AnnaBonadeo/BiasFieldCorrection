@@ -36,16 +36,27 @@ def get_patients_number():
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-def get_scatterplot_with_densities(x:np.array, y:np.array):
+def get_scatterplot_with_densities(x:np.array, y:np.array, bins = 655):
     x = x.ravel()
     y = y.ravel()
     # Calculate the point density
-    xy = np.vstack([x, y])
-    z = gaussian_kde(xy)(xy)
+    # 1 # Compute the 2D histogram
+    density, xedges, yedges = np.histogram2d(x, y, bins=bins)
 
-    # Sort the points by density, so that the densest points are plotted last
-    idx = z.argsort()
-    x, y, z = x[idx], y[idx], z[idx]
+    """# Convert bin edges into bin centers
+    xcenters = (xedges[:-1] + xedges[1:]) / 2
+    ycenters = (yedges[:-1] + yedges[1:]) / 2"""
+
+    # Assign density values to each (x, y) point
+    x_bin_indices = np.digitize(x, xedges) - 1
+    y_bin_indices = np.digitize(y, yedges) - 1
+
+    # Ensure indices stay within valid range
+    x_bin_indices = np.clip(x_bin_indices, 0, bins - 1)
+    y_bin_indices = np.clip(y_bin_indices, 0, bins - 1)
+
+    # Assign density values to points
+    z = density[x_bin_indices, y_bin_indices]
     return x, y, z
 
 
