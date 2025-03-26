@@ -1,6 +1,8 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.stats import gaussian_kde
+
 
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
@@ -34,12 +36,25 @@ def get_patients_number():
         except ValueError:
             print("Invalid input. Please enter a number.")
 
+def get_scatterplot_with_densities(x:np.array, y:np.array):
+    # Calculate the point density
+    xy = np.vstack([x, y])
+    z = gaussian_kde(xy)(xy)
+
+    # Sort the points by density, so that the densest points are plotted last
+    idx = z.argsort()
+    x, y, z = x[idx], y[idx], z[idx]
+    return x, y, z
+
+
 def calculate_scatterplot_biasfield_native(mri_fname, native_mri_array:np.array,biasfield_array:np.array,display = False, save = False, ax = None):
     # Let's try sampling to see if the plot works
     # Determine the number of points to sample (e.g., 10% of the total data)
     shape_native = np.shape(native_mri_array)
     shape_biasfield = np.shape(biasfield_array)
     print("Native ", shape_native, "Biasfield ", shape_biasfield)
+
+    # SAMPLING for better visualization
     num_points = len(native_mri_array)
     fraction = 0.1  # 10% of the data
     sample_size = int(num_points * fraction)
@@ -53,9 +68,12 @@ def calculate_scatterplot_biasfield_native(mri_fname, native_mri_array:np.array,
 
     if ax is None:
         fig, ax = plt.subplots()
+
+    # If SAMPLING is removed
     #ax.scatter(native_mri_array,biasfield_array, s=1, alpha=0.5)
     # Plot the sampled points
-    ax.scatter(sampled_native_mri_array, sampled_biasfield_array, s = 1, alpha = 0.5)
+    density_sampled_native_mri_array, density_sampled_biasfield_array, colors = get_scatterplot_with_densities(sampled_native_mri_array, sampled_biasfield_array)
+    ax.scatter(density_sampled_native_mri_array, density_sampled_biasfield_array, c = colors, s = 1, alpha = 0.5)
 
     # Labels and title in white
     ax.set_xlabel('Native MRI intensities', color='black')
