@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 from scipy.stats import gaussian_kde
 
 
@@ -82,6 +83,9 @@ def calculate_scatterplot_biasfield_native(mri_fname, native_mri_array:np.array,
     #ax.scatter(native_mri_array,biasfield_array, s=1, alpha=0.5)
     # Plot the sampled points
     density_sampled_native_mri_array, density_sampled_biasfield_array, colors = get_scatterplot_with_densities(sampled_native_mri_array, sampled_biasfield_array)
+    # Normalize the density values (rescale to [0, 1])
+    norm = mcolors.Normalize(vmin=np.min(colors), vmax=np.max(colors))  # Normalize between the min and max density
+    colors = norm(colors)
     sc = ax.scatter(density_sampled_native_mri_array, density_sampled_biasfield_array, c = colors, cmap = 'viridis', s = 1, alpha = 0.5)
 
     # Add colorbar to indicate density
