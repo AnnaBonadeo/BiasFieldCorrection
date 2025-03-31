@@ -69,18 +69,19 @@ def calculate_scatterplot_biasfield_native(mri_fname, native_mri_array:np.array,
 
     # SAMPLING for better visualization
     # Create a single mask (Boolean) that will be applied to both arrays
-    sampling_rate = 0.5  # 10% sampling
-    mask = np.random.rand(*native_mri_array.shape) < sampling_rate  # ✅ Same mask for both
+    sampling_rate = 0.5  # 50% sampling
+    mask = np.random.rand(*native_mri_array.shape) < sampling_rate  # Same mask for both
 
     # Apply the same mask to both arrays
-    sampled_native_mri_array = native_mri_array[mask]  # ✅ Corresponding values
-    sampled_biasfield_array = biasfield_array[mask]  # ✅ Corresponding values
+    sampled_native_mri_array = native_mri_array[mask]  # Corresponding values
+    sampled_biasfield_array = biasfield_array[mask]  # Corresponding values
 
     if ax is None:
         fig, ax = plt.subplots()
 
     # If SAMPLING is removed
     #ax.scatter(native_mri_array,biasfield_array, s=1, alpha=0.5)
+
     # Plot the sampled points
     density_sampled_native_mri_array, density_sampled_biasfield_array, colors = get_scatterplot_with_densities(sampled_native_mri_array, sampled_biasfield_array)
     # Normalize the density values (rescale to [0, 1])
