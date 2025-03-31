@@ -41,8 +41,10 @@ def calculate_histogram2D_biasfield_native(mri_fname, native_mri_array:np.array,
     shape_biasfield = np.shape(biasfield_array)
     print("Native ", shape_native, "Biasfield ", shape_biasfield)
 
-    sc = ax.scatter_hist2D(native_mri_array, biasfield_array, s = 1, marker = 'o', mode = 'mountain', bins = bins)
+    native_mri_array_flat = native_mri_array.ravel()
+    biasfield_flat = biasfield_array.ravel()
 
+    sc = ax.hexbin(native_mri_array_flat, biasfield_flat, gridsize=bins, cmap='inferno', bins='log')
     if ax is None:
         fig, ax = plt.subplots()
 
