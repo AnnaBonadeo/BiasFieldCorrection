@@ -13,6 +13,5 @@ desktop.ini
 .AppleDouble
 .LSOverride
 
-bias_field_correction_samples/*.*
 test_dataset
 try_directory
