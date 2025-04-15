@@ -36,9 +36,6 @@ def get_patients_number():
 
 def get_scatterplot_native_biasfield(mri_fname:str, array_mri:np.array, array_biasfield:np.array, display = False, save = False, ax = None):
     hxb = ax.hexbin(array_mri, array_biasfield, C=None, gridsize=100, bins='log')
-    positions_hex = hxb.get_offsets()
-    counts_hex = hxb.get_array()
-    print(positions_hex, counts_hex)
 
     if ax is None:
         fig, ax = plt.subplots()
