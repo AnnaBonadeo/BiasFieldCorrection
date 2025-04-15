@@ -35,7 +35,11 @@ def get_patients_number():
             print("Invalid input. Please enter a number.")
 
 def get_scatterplot_native_biasfield(mri_fname:str, array_mri:np.array, array_biasfield:np.array, display = False, save = False, ax = None):
-    hxb = ax.hexbin(array_mri, array_biasfield, C=None, gridsize=100, bins='log')
+    # Try remove 0
+    mask = array_mri > 0  # Only include voxels with non-zero native intensities
+    x_vals = array_mri[mask]
+    y_vals = array_biasfield[mask]
+    hxb = ax.hexbin(x_vals, y_vals, C=None, gridsize=100, bins='log')
 
     if ax is None:
         fig, ax = plt.subplots()
