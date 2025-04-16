@@ -17,7 +17,7 @@ def get_array_tumor_seg(folder_name, subfolder_dir, array_dir, nii_file):
         img_array = img.get_fdata()
         img_array_path = os.path.join(array_dir, f"{nii_file_name}_array.npy")
         np.save(img_array_path, img_array)
-        print(f"Tumor segmentation array successfully save for {subfolder_dir} to {array_dir}")
+        print(f"Brain segmentation array successfully save for {subfolder_dir} to {array_dir}")
 def process_folder(folder):
     folder_path = os.path.join(NEW_DIR, folder)
     folder_name = folder.split('_')[0]
