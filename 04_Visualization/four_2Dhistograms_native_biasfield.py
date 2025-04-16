@@ -36,9 +36,12 @@ def get_patients_number():
 
 def get_scatterplot_native_biasfield(mri_fname:str, array_mri:np.array, array_biasfield:np.array,brain_seg_array:np.array, display = False, save = False, ax = None):
     # Try remove 0
-    mask = brain_seg_array  # Only include voxels with non-zero native intensities
+    mask = array_mri > 0  # Only include voxels with non-zero native intensities
+    x_vals = array_mri[mask]
+    y_vals = array_biasfield[mask]
+    """mask = brain_seg_array  # Only include voxels with non-zero native intensities
     x_vals = np.multiply(array_mri, mask)
-    y_vals = array_biasfield
+    y_vals = array_biasfield"""
     hxb = ax.hexbin(x_vals, y_vals, C=None, gridsize=100, bins='log')
 
     if ax is None:
