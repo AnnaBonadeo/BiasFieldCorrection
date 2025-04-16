@@ -2,8 +2,9 @@ import nibabel as nib
 import numpy as np
 import multiprocessing
 import os
-from save_files import CONTROL1, NEW_DIR
 
+CONTROL1 = "UCSF-PDGM-"
+NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 CONTROL_BRAINSEG = "brain_segmentation"
 
 def get_array_tumor_seg(folder_name, subfolder_dir, array_dir, nii_file):
