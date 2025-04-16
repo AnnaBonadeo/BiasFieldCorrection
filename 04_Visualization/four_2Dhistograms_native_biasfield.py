@@ -73,7 +73,7 @@ def compute_all_scatterplots_mri_type(new_dir_path, patient_dir_name_nifti, mri_
     native_image_array = np.load(native_image_array_path).astype(np.float32)
 
     # Brain segmentation
-    brain_seg_array_path = os.path.join(array_dir_path, f'{patient_dir_name}_brain_segmentation_array-npy')
+    brain_seg_array_path = os.path.join(array_dir_path, f'{patient_dir_name}_brain_segmentation_array.npy')
     brain_seg_array = np.load(brain_seg_array_path).astype(np.float32)
 
     # Biasfield images
