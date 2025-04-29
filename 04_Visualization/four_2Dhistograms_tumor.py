@@ -74,9 +74,10 @@ def get_scatterplot_native_biasfield(mri_fname:str, array_mri:np.array, array_bi
     ax.set_facecolor('black')
     ax.tick_params(axis='both', colors='black')
 
-    # Optional legend
     if np.any(tumor_mask):
-        ax.legend(loc='upper right', fontsize=8, facecolor='white', edgecolor='white')
+        legend = ax.legend(loc='upper right', fontsize=8, facecolor='white', edgecolor='white')
+        for text in legend.get_texts():
+            text.set_color('black')
 
     return ax
 
