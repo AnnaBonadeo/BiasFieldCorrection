@@ -37,39 +37,6 @@ def get_patients_number():
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-
-def verify_tumor_points_on_hexbin(ax, tumor_x, tumor_y, hxb, tolerance=327.0):
-    """
-    Verifies whether tumor points fall within the hexbin bins (within a radius).
-
-    Parameters:
-    - ax: The matplotlib axis with the plot.
-    - tumor_x, tumor_y: Tumor scatter x and y coordinates.
-    - hxb: The hexbin object returned by ax.hexbin().
-    - tolerance: Distance threshold to count a tumor point as inside a bin.
-    """
-    if tumor_x.size == 0:
-        print("No tumor points found.")
-        return
-
-    # Get bin centers from hexbin
-    bin_centers = hxb.get_offsets()  # shape (N, 2)
-
-    # Build spatial tree for fast nearest-neighbor lookup
-    tree = cKDTree(bin_centers)
-    tumor_points = np.column_stack((tumor_x, tumor_y))
-
-    # Query nearest bin for each tumor point
-    distances, _ = tree.query(tumor_points, k=1)
-
-    # Check how many are within tolerance
-    within_tolerance = distances <= tolerance
-    percent_within = np.sum(within_tolerance) / len(tumor_points) * 100
-
-    print(f"✔️ {np.sum(within_tolerance)} / {len(tumor_points)} tumor points "
-          f"({percent_within:.2f}%) lie within {tolerance} units of a hexbin center.")
-
-
 def get_scatterplot_native_biasfield_tumor(mri_fname:str, array_mri:np.array, array_biasfield:np.array, brain_seg_array:np.array, tumor_mask_array:np.array, display = False, save = False, ax = None):
     if ax is None:
         fig, ax = plt.subplots()
@@ -96,8 +63,6 @@ def get_scatterplot_native_biasfield_tumor(mri_fname:str, array_mri:np.array, ar
         x_vals_tumor = array_mri[tumor_mask]
         y_vals_tumor = array_biasfield[tumor_mask]
         ax.scatter(x_vals_tumor, y_vals_tumor, color='red', s=1, alpha=0.6, label='Tumor Voxels')
-    # Call verification
-    verify_tumor_points_on_hexbin(ax, x_vals_tumor, y_vals_tumor, hxb, tolerance=1.0)
     # Add colorbar for non-tumor hexbin
     cbar = plt.colorbar(hxb, ax=ax)
     cbar.set_label('Non-Tumor Density')
