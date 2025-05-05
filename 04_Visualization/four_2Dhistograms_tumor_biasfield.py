@@ -2,6 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
+CONTROLTSEG = "tumor_segmentation"
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
 
@@ -34,7 +35,7 @@ def get_patients_number():
         except ValueError:
             print("Invalid input. Please enter a number.")
 
-def get_scatterplot_native_biasfield(mri_fname:str, array_tumorsegmentation:np.array, array_biasfield:np.array, brain_seg_array:np.array, display = False, save = False, ax = None):
+def get_scatterplot_native_biasfield(mri_fname:str, array_tumorsegmentation:np.array, array_biasfield:np.array, display = False, save = False, ax = None):
     # Try remove 0
     mask = array_tumorsegmentation > 0  # Only include voxels with non-zero native intensities
     x_vals = array_tumorsegmentation[mask]
@@ -73,14 +74,10 @@ def compute_all_scatterplots_mri_type(new_dir_path, patient_dir_name_nifti, mri_
     patient_dir_name = patient_dir_name_nifti.split("_")[0]
 
     # Tumor segmentation
+    tumor_seg_array_path = os.path.join(array_dir_path, f'{patient_dir_name}_{CONTROLTSEG}_not_rescaled.npy')
+    tumor_seg_array = np.load(tumor_seg_array_path).astype(np.float32)
 
-    # Native image
-    native_image_array_path = os.path.join(array_dir_path, f'{patient_dir_name}_{mri_type}_rescaled.npy')
-    native_image_array = np.load(native_image_array_path).astype(np.float32)
-
-
-
-    # Biasfield images
+     # Biasfield images
     bias_n4_brain_name = f'biasfield_{patient_dir_name}_{mri_type}_N4_brain_rescaled'
     bias_n4_healthy_name = f'biasfield_{patient_dir_name}_{mri_type}_N4_healthy_mask_rescaled'
     bias_n4_brain_healthy_name = f'biasfield_{patient_dir_name}_{mri_type}_N4_brain_healthy_mask_rescaled'
@@ -104,10 +101,10 @@ def compute_all_scatterplots_mri_type(new_dir_path, patient_dir_name_nifti, mri_
 
 
     fig, axs = plt.subplots(2, 2, figsize=(12, 10))
-    get_scatterplot_native_biasfield(bias_n4_brain_nameplot, native_image_array, bias_n4_brain_array,brain_seg_array, display=display, save=save,ax=axs[0, 0])
-    get_scatterplot_native_biasfield(bias_n4_healthy_nameplot, native_image_array, bias_n4_healthy_array, brain_seg_array, display=display,save=save, ax=axs[0, 1])
-    get_scatterplot_native_biasfield(bias_n4_brain_healthy_nameplot, native_image_array, bias_n4_brain_healthy_array, brain_seg_array, display=display, save=save, ax=axs[1, 0])
-    get_scatterplot_native_biasfield(bias_n4_healthy_brain_nameplot, native_image_array, bias_n4_healthy_brain_array, brain_seg_array, display=display, save=save, ax=axs[1, 1])
+    get_scatterplot_native_biasfield(bias_n4_brain_nameplot, tumor_seg_array, bias_n4_brain_array,display=display, save=save,ax=axs[0, 0])
+    get_scatterplot_native_biasfield(bias_n4_healthy_nameplot, tumor_seg_array, bias_n4_healthy_array, display=display,save=save, ax=axs[0, 1])
+    get_scatterplot_native_biasfield(bias_n4_brain_healthy_nameplot, tumor_seg_array, bias_n4_brain_healthy_array, display=display, save=save, ax=axs[1, 0])
+    get_scatterplot_native_biasfield(bias_n4_healthy_brain_nameplot, tumor_seg_array, bias_n4_healthy_brain_array, display=display, save=save, ax=axs[1, 1])
 
 def continue_main_for_new_patient(NEW_DIR, folder_name, mri_type, patient_number, display=True, save=False):
     user_ans = user_continue_ans('YN')
