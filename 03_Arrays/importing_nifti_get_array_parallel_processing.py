@@ -1,4 +1,3 @@
-IMPORTING THE BIASFIELD ARRAY NOT RESCALED
 import multiprocessing
 
 import nibabel as nib
