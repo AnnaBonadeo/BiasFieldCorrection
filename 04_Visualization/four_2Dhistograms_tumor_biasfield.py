@@ -78,10 +78,10 @@ def compute_all_scatterplots_mri_type(new_dir_path, patient_dir_name_nifti, mri_
     tumor_seg_array = np.load(tumor_seg_array_path).astype(np.float32)
 
      # Biasfield images
-    bias_n4_brain_name = f'biasfield_{patient_dir_name}_{mri_type}_N4_brain_rescaled'
-    bias_n4_healthy_name = f'biasfield_{patient_dir_name}_{mri_type}_N4_healthy_mask_rescaled'
-    bias_n4_brain_healthy_name = f'biasfield_{patient_dir_name}_{mri_type}_N4_brain_healthy_mask_rescaled'
-    bias_n4_healthy_brain_name = f'biasfield_{patient_dir_name}_{mri_type}_N4_healthy_mask_brain_rescaled'
+    bias_n4_brain_name = f'biasfield_{patient_dir_name}_{mri_type}_N4_brain_not_rescaled'
+    bias_n4_healthy_name = f'biasfield_{patient_dir_name}_{mri_type}_N4_healthy_mask_not_rescaled'
+    bias_n4_brain_healthy_name = f'biasfield_{patient_dir_name}_{mri_type}_N4_brain_healthy_mask_not_rescaled'
+    bias_n4_healthy_brain_name = f'biasfield_{patient_dir_name}_{mri_type}_N4_healthy_mask_brain_not_rescaled'
 
     # Paths of the arrays
     bias_n4_brain_path = os.path.join(array_dir_path, f'{bias_n4_brain_name}.npy')
