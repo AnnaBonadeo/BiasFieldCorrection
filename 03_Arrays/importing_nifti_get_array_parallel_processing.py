@@ -4,7 +4,8 @@ import nibabel as nib
 import numpy as np
 
 import os
-from save_files import CONTROL1, NEW_DIR
+CONTROL1 = "UCSF-PDGM-"
+NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 
 
 def rescale_to_16bit(array, epsilon=1e-6):
