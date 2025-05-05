@@ -18,7 +18,7 @@ def rescale_to_16bit(array, epsilon=1e-6):
     return (65535 * (array - old_min) / (old_max - old_min)).astype(np.uint16)
 
 def get_arrays_for_patient(folder_name, subfolder_dir, array_dir, nii_file):
-    if nii_file.startswith(f'biasfield_{folder_name}'):  # original file corrected to not exclude the biasfields
+    if nii_file.startswith(folder_name):  # original file corrected to not exclude the biasfields
         if nii_file.endswith("_dn.nii.gz"):  # Exclude _dn.nii.gz files
             print(f"Skipping file: {nii_file} (ends with _dn.nii.gz)")
             return  # Skip processing
@@ -44,16 +44,16 @@ def process_folder(folder):
         print(f"Processing folder: {folder}")
 
         # anat_dir = os.path.join(folder_path, "anat")
-        reg_dir = os.path.join(folder_path, "reg")
+        seg_dir = os.path.join(folder_path, "seg")
         array_dir = os.path.join(folder_path, "array")
         # Ensure directories exist
         #os.makedirs(anat_dir, exist_ok=True)
-        os.makedirs(reg_dir, exist_ok=True)
+        os.makedirs(seg_dir, exist_ok=True)
         os.makedirs(array_dir, exist_ok=True)
 
         print("Processing reg directory")
-        for nii_file in os.listdir(reg_dir):
-            get_arrays_for_patient(folder_name, reg_dir, array_dir, nii_file)
+        for nii_file in os.listdir(seg_dir):
+            get_arrays_for_patient(folder_name, seg_dir, array_dir, nii_file)
         """print("Processing anat directory")
         for nii_file in os.listdir(anat_dir):
             get_arrays_for_patient(folder_name, anat_dir, array_dir, nii_file)"""
