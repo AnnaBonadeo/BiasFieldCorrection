@@ -2,9 +2,6 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 
-
-from save_files import NEW_DIR
-
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 CONTROL1 = "UCSF-PDGM-"
 MRI_TYPE = ["T1", "T1c", "T2", "FLAIR"]
@@ -24,6 +21,7 @@ def compute_median_distance_histograms(array_whole_brain, array_tumor_binary):
 
 def compute_medians_all_patients(NEW_DIR):
         medians_native = {mri_type: [] for mri_type in MRI_TYPE}
+        # Double level key dictionary
         n4_medians = {mri_type: {variant: [] for variant in N4_VARIANTS} for mri_type in MRI_TYPE}
 
         for folder in os.listdir(NEW_DIR):
