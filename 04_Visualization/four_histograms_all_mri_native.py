@@ -101,26 +101,34 @@ def load_array_from_dir_patient(new_dir_path, patient_dir_name_nifti, patient_nu
 
 # MAIN
 # MAIN
-patient_number = get_patients_number()
-patient_folder_name = f'UCSF-PDGM-{patient_number}_nifti'
-arrays = load_array_from_dir_patient(NEW_DIR, patient_folder_name, patient_number)
-if arrays is None:
-    print("Patient data not found or missing arrays. Exiting.")
-    exit()
+# MAIN LOOP
+if __name__ == '__main__':
+    while True:
+        patient_number = get_patients_number()
+        patient_folder_name = f'UCSF-PDGM-{patient_number}_nifti'
+        arrays = load_array_from_dir_patient(NEW_DIR, patient_folder_name, patient_number)
+        if arrays is None:
+            print("Patient data not found or missing arrays. Try another one.")
+            continue  # Go back to ask for a new patient number
 
-mri_t1_array, mri_t1c_array, mri_t2_array, mri_flair_array, tumor_binary_array = arrays
+        mri_t1_array, mri_t1c_array, mri_t2_array, mri_flair_array, tumor_binary_array = arrays
 
-# Plot the histograms
-axs = calculate_patient_histograms_native_tumor(
-    patient_number,
-    patient_folder_name,
-    mri_t1_array,
-    mri_t1c_array,
-    mri_t2_array,
-    mri_flair_array,
-    tumor_binary_array
-)
+        # Plot the histograms
+        axs = calculate_patient_histograms_native_tumor(
+            patient_number,
+            patient_folder_name,
+            mri_t1_array,
+            mri_t1c_array,
+            mri_t2_array,
+            mri_flair_array,
+            tumor_binary_array
+        )
 
-# Show the plot
-plt.tight_layout()
-plt.show()
+        plt.tight_layout()
+        plt.show()
+
+        # Ask user whether to continue
+        cont = input("Analyze another patient? (y/n): ").strip().lower()
+        if cont != 'y':
+            print("Exiting.")
+            break
