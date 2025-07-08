@@ -116,7 +116,7 @@ def get_user_answer(INPUT_MRI):
 
 def plot_violin_by_method(df, modality):
     # Filter only the selected modality
-    df_modality = df[df["modality"] == modality]
+    df_modality = df[df["Modality"] == modality]
 
     # Set up the plot
     plt.figure(figsize=(10, 6))
