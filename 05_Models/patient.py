@@ -2,9 +2,12 @@ import os.path
 import numpy as np
 import pandas as pd
 import re
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 REMOTE = r"C:\Users\Anna\PycharmProjects\Brain_Imaging\bias_field_correction_samples"
+INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
 
 class Patient():
     def __init__(self, id_, local=False):
@@ -99,6 +102,33 @@ class Patient():
         df = pd.DataFrame(data)
         return df
 
+def get_user_answer(INPUT_MRI):
+    user_ans = input("Enter the MRI image for medians visualization: ").strip().lower()
+
+    # Normalize input list to lowercase for comparison
+    valid_answers = {mri.lower(): mri for mri in INPUT_MRI}
+
+    while user_ans not in valid_answers:
+        print("Invalid input. Please try again.")
+        user_ans = input("Enter the MRI image to analyze: ").strip().lower()
+
+    return valid_answers[user_ans]  # Return the correctly formatted value (T1/T1c/T2/FLAIR)
+
+def plot_violin_by_method(df, modality):
+    # Filter only the selected modality
+    df_modality = df[df["modality"] == modality]
+
+    # Set up the plot
+    plt.figure(figsize=(10, 6))
+    sns.violinplot(data=df_modality, x="method", y="median_distance", palette="Set2")
+
+    # Customization
+    plt.title(f"Median Distance for {modality} across Methods")
+    plt.xlabel("Bias Correction Method")
+    plt.ylabel("Median Intensity Distance")
+    plt.grid(True, linestyle="--", alpha=0.3)
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
      dir = NEW_DIR
@@ -118,3 +148,6 @@ if __name__ == "__main__":
                     print(f"Error processing {numeric_id}: {e}")
      all_dfs = pd.concat(all_dfs, ignore_index=True)
      all_dfs.to_csv(f"{dir}/00_patient_df.csv", index=False)
+
+     user_answer_modality = get_user_answer(INPUT_MRI)
+     plot_violin_by_method(all_dfs, user_answer_modality)
