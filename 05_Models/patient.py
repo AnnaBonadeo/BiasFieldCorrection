@@ -147,7 +147,7 @@ if __name__ == "__main__":
                  except Exception as e:
                     print(f"Error processing {numeric_id}: {e}")
      all_dfs = pd.concat(all_dfs, ignore_index=True)
-     all_dfs.to_csv(f"{dir}/00_patient_df.csv", index=False)
+     # all_dfs.to_csv(f"{dir}/00_patient_df.csv", index=False)
 
      user_answer_modality = get_user_answer(INPUT_MRI)
      plot_violin_by_method(all_dfs, user_answer_modality)
