@@ -163,6 +163,13 @@ if __name__ == "__main__":
 
     all_dfs = pd.concat(all_dfs, ignore_index=True)
     # all_dfs.to_csv(f"{NEW_DIR}/00_patient_df.csv", index=False)
+    all_dfs_long = pd.melt(
+        all_dfs,
+        id_vars=["Patient", "Modality"],
+        value_vars=["Native", "N4_Brain", "N4_Healthy", "N4_Brain_Healthy", "N4_Healthy_Brain"],
+        var_name="method",
+        value_name="median_distance"
+    )
 
     user_answer_modality = get_user_answer(INPUT_MRI)
-    plot_violin_by_method(all_dfs, user_answer_modality)
+    plot_violin_by_method(all_dfs_long, user_answer_modality)
