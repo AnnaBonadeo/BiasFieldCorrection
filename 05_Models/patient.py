@@ -111,7 +111,7 @@ if __name__ == "__main__":
              if match:
                  numeric_id = match.group()
                  try:
-                     p = Patient(numeric_id, local=True) # change local = False for remote
+                     p = Patient(numeric_id, local=False) # change local = False for remote
                      df = p.get_patient_df()
                      all_dfs.append(df)
                  except Exception as e:
