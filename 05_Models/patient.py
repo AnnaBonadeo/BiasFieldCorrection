@@ -4,6 +4,8 @@ import pandas as pd
 import re
 import matplotlib.pyplot as plt
 import seaborn as sns
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
 
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 REMOTE = r"C:\Users\Anna\PycharmProjects\Brain_Imaging\bias_field_correction_samples"
@@ -130,24 +132,37 @@ def plot_violin_by_method(df, modality):
     plt.tight_layout()
     plt.show()
 
-if __name__ == "__main__":
-     dir = NEW_DIR
-     all_dfs = []
-     for folder in os.listdir(dir):
-         full_path = os.path.join(dir, folder)
-         if os.path.isdir(full_path):
-             # Extract numeric part from folder name (e.g., 'UCSF-PDGM-0455_nifti' -> '0455')
-             match = re.search(r'\d+', folder)
-             if match:
-                 numeric_id = match.group()
-                 try:
-                     p = Patient(numeric_id, local=False) # change local = False for remote
-                     df = p.get_patient_df()
-                     all_dfs.append(df)
-                 except Exception as e:
-                    print(f"Error processing {numeric_id}: {e}")
-     all_dfs = pd.concat(all_dfs, ignore_index=True)
-     # all_dfs.to_csv(f"{dir}/00_patient_df.csv", index=False)
+def process_patient(folder):
+    full_path = os.path.join(NEW_DIR, folder)
+    if not os.path.isdir(full_path):
+        return None
 
-     user_answer_modality = get_user_answer(INPUT_MRI)
-     plot_violin_by_method(all_dfs, user_answer_modality)
+    match = re.search(r'\d+', folder)
+    if match:
+        numeric_id = match.group()
+        try:
+            p = Patient(numeric_id, local=False)
+            df = p.get_patient_df()
+            return df
+        except Exception as e:
+            print(f"Error processing {numeric_id}: {e}")
+            return None
+    return None
+
+if __name__ == "__main__":
+    folders = os.listdir(NEW_DIR)
+    all_dfs = []
+
+    with ProcessPoolExecutor() as executor:
+        futures = [executor.submit(process_patient, folder) for folder in folders]
+
+        for future in as_completed(futures):
+            result = future.result()
+            if result is not None:
+                all_dfs.append(result)
+
+    all_dfs = pd.concat(all_dfs, ignore_index=True)
+    # all_dfs.to_csv(f"{NEW_DIR}/00_patient_df.csv", index=False)
+
+    user_answer_modality = get_user_answer(INPUT_MRI)
+    plot_violin_by_method(all_dfs, user_answer_modality)
