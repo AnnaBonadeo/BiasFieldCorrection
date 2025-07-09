@@ -136,7 +136,7 @@ def plot_violin_by_method(df, modality):
     sns.violinplot(data=df_modality, x="method", y="median_distance", palette="Set2")
 
     # Customization
-    plt.title(f"Median Distance for {modality} across Methods")
+    plt.title(f"Median Distance for {modality} across Patients")
     plt.xlabel("Bias Correction Method")
     plt.ylabel("Median Intensity Distance")
     plt.grid(True, linestyle="--", alpha=0.3)
