@@ -1,11 +1,6 @@
 import os.path
 import numpy as np
 import pandas as pd
-import re
-import matplotlib.pyplot as plt
-import seaborn as sns
-from concurrent.futures import ProcessPoolExecutor, as_completed
-
 
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 REMOTE = r"C:\Users\Anna\PycharmProjects\Brain_Imaging\bias_field_correction_samples"
@@ -64,7 +59,6 @@ class Patient():
         for i in self._calculate(native_t1_array, n4bb_t1_array, n4hh_t1_array, n4bh_t1_array, n4hb_t1_array):
             t1_medians.append(i)
         return t1_medians
-
     def get_median_distance_T2(self):
         native_t2_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_T2_rescaled.npy"))
         n4hh_t2_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_T2_N4_healthy_mask_rescaled.npy"))
@@ -96,6 +90,16 @@ class Patient():
                                  n4hb_flair_array):
             flair_medians.append(i)
         return flair_medians
+
+    def compute_center_of_mass(self, native, n4bb, n4hh, n4bh, n4hb):
+        tumor_binary_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_tumor_binary_array.npy"))
+        native_tumor_array = native * tumor_binary_array
+        n4hh_tumor_array = n4hh * tumor_binary_array
+        n4bb_tumor_array = n4bb * tumor_binary_array
+        n4hb_tumor_array = n4hb * tumor_binary_array
+        n4bh_tumor_array = n4bh * tumor_binary_array
+
+
     def get_patient_df(self):
         self.t1 = self.get_median_distance_T1()
         self.t2 = self.get_median_distance_T2()
@@ -114,85 +118,3 @@ class Patient():
              })
         df = pd.DataFrame(data)
         return df
-
-def get_user_answer(INPUT_MRI):
-    user_ans = input("Enter the MRI image for medians visualization: ").strip().lower()
-
-    # Normalize input list to lowercase for comparison
-    valid_answers = {mri.lower(): mri for mri in INPUT_MRI}
-
-    while user_ans not in valid_answers:
-        print("Invalid input. Please try again.")
-        user_ans = input("Enter the MRI image to analyze: ").strip().lower()
-
-    return valid_answers[user_ans]  # Return the correctly formatted value (T1/T1c/T2/FLAIR)
-
-def plot_violin_by_method(df, modality):
-    # Filter only the selected modality
-    df_modality = df[df["Modality"] == modality]
-
-    # Set up the plot
-    plt.figure(figsize=(10, 6))
-    sns.violinplot(data=df_modality, x="method", y="median_distance", palette="Set2")
-
-    # Customization
-    plt.title(f"Median Distance for {modality} across Patients")
-    plt.xlabel("Bias Correction Method")
-    plt.ylabel("Median Intensity Distance")
-    plt.grid(True, linestyle="--", alpha=0.3)
-    plt.tight_layout()
-    plt.show()
-
-def process_patient(folder):
-    full_path = os.path.join(NEW_DIR, folder)
-    if not os.path.isdir(full_path):
-        return None
-
-    match = re.search(r'\d+', folder)
-    if match:
-        numeric_id = match.group()
-        try:
-            p = Patient(numeric_id, local=False) # local = True for local
-            df = p.get_patient_df()
-            print(f"Processing patient:{numeric_id}")
-            return df
-        except Exception as e:
-            print(f"Error processing {numeric_id}: {e}")
-            return None
-    return None
-
-if __name__ == "__main__":
-    folders = os.listdir(NEW_DIR)
-    all_dfs = []
-
-    with ProcessPoolExecutor() as executor:
-        futures = [executor.submit(process_patient, folder) for folder in folders]
-
-        for future in as_completed(futures):
-            result = future.result()
-            if result is not None:
-                all_dfs.append(result)
-
-    all_dfs = pd.concat(all_dfs, ignore_index=True)
-    #all_dfs.to_csv(f"{NEW_DIR}/00_patient_df.csv", index=False)
-    all_dfs_long = pd.melt(
-        all_dfs,
-        id_vars=["Patient", "Modality"],
-        value_vars=["Native", "N4_Brain", "N4_Healthy", "N4_Brain_Healthy", "N4_Healthy_Brain"],
-        var_name="method",
-        value_name="median_distance"
-    )
-
-    user_answer_modality = get_user_answer(INPUT_MRI)
-
-    user_answer_all = input("Do you want to plot violin plots for ALL modalities as well? (y/n): ").strip().lower()
-
-    if user_answer_all == 'y':
-        unique_modalities = all_dfs_long["Modality"].unique()
-        for modality in unique_modalities:
-            print(f"\nPlotting for modality: {modality}")
-            plot_violin_by_method(all_dfs_long, modality)
-    else:
-        plot_violin_by_method(all_dfs_long, user_answer_modality)
-
-
