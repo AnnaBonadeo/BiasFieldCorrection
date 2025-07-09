@@ -144,7 +144,7 @@ def plot_violin_by_method(df, modality):
     plt.show()
 
 def process_patient(folder):
-    full_path = os.path.join(REMOTE, folder)
+    full_path = os.path.join(NEW_DIR, folder)
     if not os.path.isdir(full_path):
         return None
 
@@ -152,7 +152,7 @@ def process_patient(folder):
     if match:
         numeric_id = match.group()
         try:
-            p = Patient(numeric_id, local=True) # local = True for local
+            p = Patient(numeric_id, local=False) # local = True for local
             df = p.get_patient_df()
             return df
         except Exception as e:
@@ -161,7 +161,7 @@ def process_patient(folder):
     return None
 
 if __name__ == "__main__":
-    folders = os.listdir(REMOTE)
+    folders = os.listdir(NEW_DIR)
     all_dfs = []
 
     with ProcessPoolExecutor() as executor:
