@@ -174,7 +174,7 @@ if __name__ == "__main__":
                 all_dfs.append(result)
 
     all_dfs = pd.concat(all_dfs, ignore_index=True)
-    all_dfs.to_csv(f"{NEW_DIR}/00_patient_df.csv", index=False)
+    #all_dfs.to_csv(f"{NEW_DIR}/00_patient_df.csv", index=False)
     all_dfs_long = pd.melt(
         all_dfs,
         id_vars=["Patient", "Modality"],
