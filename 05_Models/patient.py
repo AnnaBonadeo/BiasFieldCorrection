@@ -184,4 +184,15 @@ if __name__ == "__main__":
     )
 
     user_answer_modality = get_user_answer(INPUT_MRI)
-    plot_violin_by_method(all_dfs_long, user_answer_modality)
+
+    user_answer_all = input("Do you want to plot violin plots for ALL modalities as well? (y/n): ").strip().lower()
+
+    if user_answer_all == 'y':
+        unique_modalities = all_dfs_long["Modality"].unique()
+        for modality in unique_modalities:
+            print(f"\nPlotting for modality: {modality}")
+            plot_violin_by_method(all_dfs_long, modality)
+    else:
+        plot_violin_by_method(all_dfs_long, user_answer_modality)
+
+
