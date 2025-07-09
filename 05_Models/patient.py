@@ -19,28 +19,39 @@ class Patient():
         self.dir = f"{path}/{self.prefix}_nifti"
 
     def _calculate(self, native, n4bb, n4hh, n4bh, n4hb):
+
         tumor_binary_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_tumor_binary_array.npy"))
         native_tumor_array = native * tumor_binary_array
         n4hh_tumor_array = n4hh * tumor_binary_array
         n4bb_tumor_array = n4bb * tumor_binary_array
         n4hb_tumor_array = n4hb * tumor_binary_array
         n4bh_tumor_array = n4bh * tumor_binary_array
-        median_whole_brain_native = np.median(native)
-        median_whole_brain_n4bb = np.median(n4bb)
-        median_whole_brain_n4hh = np.median(n4hh)
-        median_whole_brain_n4bh = np.median(n4bh)
-        median_whole_brain_n4hb = np.median(n4hb)
-        median_tumor_native = np.median(native_tumor_array)
-        median_tumor_n4bb = np.median(n4bb_tumor_array)
-        median_tumor_n4hh = np.median(n4hh_tumor_array)
-        median_tumor_n4bh = np.median(n4bh_tumor_array)
-        median_tumor_n4hb = np.median(n4hb_tumor_array)
+
+        median_whole_brain_native = np.median(native[native > 0])
+        median_whole_brain_n4bb = np.median(n4bb[n4bb > 0])
+        median_whole_brain_n4hh = np.median(n4hh[n4hh > 0])
+        median_whole_brain_n4bh = np.median(n4bh[n4bh > 0])
+        median_whole_brain_n4hb = np.median(n4hb[n4hb > 0])
+
+        median_tumor_native = np.median(native_tumor_array[native_tumor_array > 0])
+        median_tumor_n4bb = np.median(n4bb_tumor_array[n4bb_tumor_array > 0])
+        median_tumor_n4hh = np.median(n4hh_tumor_array[n4hh_tumor_array > 0])
+        median_tumor_n4bh = np.median(n4bh_tumor_array[n4bh_tumor_array > 0])
+        median_tumor_n4hb = np.median(n4hb_tumor_array[n4hb_tumor_array > 0])
+
         median_distance_native = median_whole_brain_native - median_tumor_native
         median_distance_n4bb = median_whole_brain_n4bb - median_tumor_n4bb
         median_distance_n4hh = median_whole_brain_n4hh - median_tumor_n4hh
         median_distance_n4bh = median_whole_brain_n4bh - median_tumor_n4bh
         median_distance_n4hb = median_whole_brain_n4hb - median_tumor_n4hb
-        return [float(median_distance_native), float(median_distance_n4bb), float(median_distance_n4hh), float(median_distance_n4bh), float(median_distance_n4hb)]
+
+        return [
+            float(median_distance_native),
+            float(median_distance_n4bb),
+            float(median_distance_n4hh),
+            float(median_distance_n4bh),
+            float(median_distance_n4hb)
+        ]
 
     def get_median_distance_T1(self):
         # Load
@@ -133,7 +144,7 @@ def plot_violin_by_method(df, modality):
     plt.show()
 
 def process_patient(folder):
-    full_path = os.path.join(NEW_DIR, folder)
+    full_path = os.path.join(REMOTE, folder)
     if not os.path.isdir(full_path):
         return None
 
@@ -141,7 +152,7 @@ def process_patient(folder):
     if match:
         numeric_id = match.group()
         try:
-            p = Patient(numeric_id, local=False)
+            p = Patient(numeric_id, local=True) # local = True for local
             df = p.get_patient_df()
             return df
         except Exception as e:
@@ -150,7 +161,7 @@ def process_patient(folder):
     return None
 
 if __name__ == "__main__":
-    folders = os.listdir(NEW_DIR)
+    folders = os.listdir(REMOTE)
     all_dfs = []
 
     with ProcessPoolExecutor() as executor:
