@@ -130,7 +130,6 @@ class Patient():
             "masked": {"coords": coords_masked, "intensity": intensity_at_com_masked},
             }
     def compute_center_of_mass(self):
-        def compute_center_of_mass(self):
             self.com_data = {
                 "T1": {
                     "n4bb": self._center_and_intensity(self.n4bb_t1_array),
