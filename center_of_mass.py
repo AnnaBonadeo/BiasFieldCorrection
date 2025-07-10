@@ -7,7 +7,7 @@ from Models.patient import Patient
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 INPUT_MRI = ["T1", "T1c", "T2", "FLAIR"]
 
-def plot_com_intensities(patient_list, modality="T1"):
+def plot_com_intensities(patient_data_list, modality="T1"):
     corrections = ["n4bb", "n4hh", "n4bh", "n4hb"]
     colors = {"n4bb": "blue", "n4hh": "green", "n4bh": "red", "n4hb": "purple"}
 
@@ -17,16 +17,12 @@ def plot_com_intensities(patient_list, modality="T1"):
         x_vals = []
         y_vals = []
 
-        for patient in patient_list:
-            # Check if com_data exists and modality/correction is available
-            if (
-                not hasattr(patient, "com_data")
-                or modality not in patient.com_data
-                or correction not in patient.com_data[modality]
-            ):
+        for pdata in patient_data_list:
+            com_data = pdata.get("com_data", {})
+            if modality not in com_data or correction not in com_data[modality]:
                 continue
 
-            com = patient.com_data[modality][correction]
+            com = com_data[modality][correction]
             x = com["full"]["intensity"]
             y = com["masked"]["intensity"]
 
@@ -44,28 +40,35 @@ def plot_com_intensities(patient_list, modality="T1"):
     plt.tight_layout()
     plt.show()
 
-def process_patient(folder, patient_list):
+def process_patient(folder):
     full_path = os.path.join(NEW_DIR, folder)
     if not os.path.isdir(full_path):
-        return
+        return None
 
     match = re.search(r'\d+', folder)
-    if match:
-        numeric_id = match.group()
-        try:
-            p = Patient(numeric_id, local=False)
-            p.compute_center_of_mass()  # no args now
-            patient_list.append(p)
-            print(f"Processed patient: {numeric_id}")
-        except Exception as e:
-            print(f"Error processing {numeric_id}: {e}")
+    if not match:
+        return None
+
+    numeric_id = match.group()
+    try:
+        p = Patient(numeric_id, local=False)
+        p.compute_center_of_mass()  # no args needed now
+        data = {"id": numeric_id, "com_data": p.com_data}
+        del p  # free memory
+        print(f"Processed patient: {numeric_id}")
+        return data
+    except Exception as e:
+        print(f"Error processing {numeric_id}: {e}")
+        return None
 
 # MAIN
 folders = os.listdir(NEW_DIR)
-patient_list = []
+patient_data_list = []
 
 for folder in folders:
-    process_patient(folder, patient_list)
+    pdata = process_patient(folder)
+    if pdata is not None:
+        patient_data_list.append(pdata)
 
 for modality in INPUT_MRI:
-    plot_com_intensities(patient_list, modality=modality)
+    plot_com_intensities(patient_data_list, modality=modality)
