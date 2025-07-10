@@ -130,33 +130,34 @@ class Patient():
             "masked": {"coords": coords_masked, "intensity": intensity_at_com_masked},
             }
     def compute_center_of_mass(self):
-        self.com_data = {
-                "T1": self.compute_center_of_mass(
-                    self.n4bb_t1_array,
-                    self.n4hh_t1_array,
-                    self.n4bh_t1_array,
-                    self.n4hb_t1_array,
-                ),
-                "T1c": self.compute_center_of_mass(
-                    self.n4bb_t1c_array,
-                    self.n4hh_t1c_array,
-                    self.n4bh_t1c_array,
-                    self.n4hb_t1c_array,
-                ),
-                "T2": self.compute_center_of_mass(
-                    self.n4bb_t2_array,
-                    self.n4hh_t2_array,
-                    self.n4bh_t2_array,
-                    self.n4hb_t2_array,
-                ),
-                "FLAIR": self.compute_center_of_mass(
-                    self.n4bb_flair_array,
-                    self.n4hh_flair_array,
-                    self.n4bh_flair_array,
-                    self.n4hb_flair_array,
-                ),
+        def compute_center_of_mass(self):
+            self.com_data = {
+                "T1": {
+                    "n4bb": self._center_and_intensity(self.n4bb_t1_array),
+                    "n4hh": self._center_and_intensity(self.n4hh_t1_array),
+                    "n4bh": self._center_and_intensity(self.n4bh_t1_array),
+                    "n4hb": self._center_and_intensity(self.n4hb_t1_array),
+                },
+                "T1c": {
+                    "n4bb": self._center_and_intensity(self.n4bb_t1c_array),
+                    "n4hh": self._center_and_intensity(self.n4hh_t1c_array),
+                    "n4bh": self._center_and_intensity(self.n4bh_t1c_array),
+                    "n4hb": self._center_and_intensity(self.n4hb_t1c_array),
+                },
+                "T2": {
+                    "n4bb": self._center_and_intensity(self.n4bb_t2_array),
+                    "n4hh": self._center_and_intensity(self.n4hh_t2_array),
+                    "n4bh": self._center_and_intensity(self.n4bh_t2_array),
+                    "n4hb": self._center_and_intensity(self.n4hb_t2_array),
+                },
+                "FLAIR": {
+                    "n4bb": self._center_and_intensity(self.n4bb_flair_array),
+                    "n4hh": self._center_and_intensity(self.n4hh_flair_array),
+                    "n4bh": self._center_and_intensity(self.n4bh_flair_array),
+                    "n4hb": self._center_and_intensity(self.n4hb_flair_array),
+                },
             }
-        return self.com_data
+            return self.com_data
 
     def get_patient_df(self):
         self.t1 = self.get_median_distance_T1()

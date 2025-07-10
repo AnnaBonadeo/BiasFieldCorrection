@@ -54,7 +54,7 @@ def process_patient(folder, patient_list):
         numeric_id = match.group()
         try:
             p = Patient(numeric_id, local=False)
-            p.compute_center_of_mass()  # No arguments needed now
+            p.compute_center_of_mass()  # no args now
             patient_list.append(p)
             print(f"Processed patient: {numeric_id}")
         except Exception as e:
@@ -67,6 +67,5 @@ patient_list = []
 for folder in folders:
     process_patient(folder, patient_list)
 
-# Plot for each modality
 for modality in INPUT_MRI:
     plot_com_intensities(patient_list, modality=modality)
