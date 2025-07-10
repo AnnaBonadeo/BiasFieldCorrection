@@ -8,7 +8,7 @@ REMOTE = r"C:\Users\Anna\PycharmProjects\Brain_Imaging\bias_field_correction_sam
 INPUT_MRI = "T1", "T1c", "T2", "FLAIR"
 
 class Patient():
-    def __init__(self, id_, local=False):
+    def __init__(self, id_, local=False, mmap=False):
         self.id = id_
         self.prefix = f"UCSF-PDGM-{self.id}"
         path = r"C:\Users\Anna\PycharmProjects\Brain_Imaging\bias_field_correction_samples" if local else "/mnt/external/reorg_patients_UCSF"
