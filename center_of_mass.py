@@ -7,13 +7,17 @@ from Models.patient import Patient
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 INPUT_MRI = ["T1", "T1c", "T2", "FLAIR"]
 
+import matplotlib.pyplot as plt
+import numpy as np
+
 def plot_com_intensities(patient_data_list, modality="T1"):
     corrections = ["n4bb", "n4hh", "n4bh", "n4hb"]
     colors = {"n4bb": "blue", "n4hh": "green", "n4bh": "red", "n4hb": "purple"}
 
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+    axes = axes.flatten()  # to index axes as a simple list
 
-    for correction in corrections:
+    for idx, correction in enumerate(corrections):
         x_vals = []
         y_vals = []
 
@@ -30,15 +34,17 @@ def plot_com_intensities(patient_data_list, modality="T1"):
                 x_vals.append(x)
                 y_vals.append(y)
 
-        ax.scatter(x_vals, y_vals, label=correction, alpha=0.7, color=colors[correction])
+        ax = axes[idx]
+        ax.scatter(x_vals, y_vals, alpha=0.7, color=colors[correction])
+        ax.set_title(f"{modality} - {correction}")
+        ax.set_xlabel("Full Volume Intensity")
+        ax.set_ylabel("Masked Volume Intensity")
+        ax.grid(True)
 
-    ax.set_xlabel("Intensity at Center of Mass (Full Volume)")
-    ax.set_ylabel("Intensity at Center of Mass (Masked Volume)")
-    ax.set_title(f"COM Intensities (Full vs. Masked) - {modality}")
-    ax.legend(title="N4 Correction")
-    ax.grid(True)
-    plt.tight_layout()
+    fig.suptitle(f"COM Intensities for {modality}", fontsize=16)
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.show()
+
 
 def process_patient(folder):
     full_path = os.path.join(NEW_DIR, folder)
