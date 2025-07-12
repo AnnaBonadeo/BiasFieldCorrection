@@ -89,4 +89,5 @@ if user_answer_all == 'y':
 else:
     plot_violin_by_method(all_dfs_long, user_answer_modality)
 
-
+print("############## STARTING THE CHECK ##########################"
+      "############################################################")

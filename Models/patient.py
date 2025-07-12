@@ -19,8 +19,8 @@ class Patient():
         self.n4bb_t1_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_T1_N4_brain_rescaled.npy"))
         self.n4bh_t1_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_T1_N4_brain_healthy_mask_rescaled.npy"))
         self.n4hb_t1_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_T1_N4_healthy_mask_brain_rescaled.npy"))
-        #Biasfield T1
-        self.biasfield_native_t1_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T1_rescaled.npy"))
+        #Biasfield T1: missing the one for the native image
+        #self.biasfield_native_t1_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T1_rescaled.npy"))
         self.biasfield_n4hh_t1_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T1_N4_healthy_mask_rescaled.npy"))
         self.biasfield_n4bb_t1_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T1_N4_brain_rescaled.npy"))
         self.biasfield_n4bh_t1_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T1_N4_brain_healthy_mask_rescaled.npy"))
@@ -32,8 +32,8 @@ class Patient():
         self.n4bb_t2_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_T2_N4_brain_rescaled.npy"))
         self.n4bh_t2_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_T2_N4_brain_healthy_mask_rescaled.npy"))
         self.n4hb_t2_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_T2_N4_healthy_mask_brain_rescaled.npy"))
-        #Biasfield
-        self.biasfield_native_t2_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T2_rescaled.npy"))
+        #Biasfield T2: missing the one for the native image
+        #self.biasfield_native_t2_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T2_rescaled.npy"))
         self.biasfield_n4hh_t2_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T2_N4_healthy_mask_rescaled.npy"))
         self.biasfield_n4bb_t2_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T2_N4_brain_rescaled.npy"))
         self.biasfield_n4bh_t2_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T2_N4_brain_healthy_mask_rescaled.npy"))
@@ -45,8 +45,8 @@ class Patient():
         self.n4bb_t1c_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_T1c_N4_brain_rescaled.npy"))
         self.n4bh_t1c_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_T1c_N4_brain_healthy_mask_rescaled.npy"))
         self.n4hb_t1c_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_T1c_N4_healthy_mask_brain_rescaled.npy"))
-        #Biasfield
-        self.biasfield_native_t1c_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T1c_rescaled.npy"))
+        #Biasfield T1c: missing the one for the native image
+        #self.biasfield_native_t1c_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T1c_rescaled.npy"))
         self.biasfield_n4hh_t1c_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T1c_N4_healthy_mask_rescaled.npy"))
         self.biasfield_n4bb_t1c_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T1c_N4_brain_rescaled.npy"))
         self.biasfield_n4bh_t1c_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_T1c_N4_brain_healthy_mask_rescaled.npy"))
@@ -57,8 +57,8 @@ class Patient():
         self.n4bb_flair_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_FLAIR_N4_brain_rescaled.npy"))
         self.n4bh_flair_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_FLAIR_N4_brain_healthy_mask_rescaled.npy"))
         self.n4hb_flair_array = np.load(os.path.join(self.dir, f"array/{self.prefix}_FLAIR_N4_healthy_mask_brain_rescaled.npy"))
-        #Biasfield
-        self.biasfield_native_flair_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_FLAIR_rescaled.npy"))
+        #Biasfield flair: missing the one for the native image
+        #self.biasfield_native_flair_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_FLAIR_rescaled.npy"))
         self.biasfield_n4hh_flair_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_FLAIR_N4_healthy_mask_rescaled.npy"))
         self.biasfield_n4bb_flair_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_FLAIR_N4_brain_rescaled.npy"))
         self.biasfield_n4bh_flair_array = np.load(os.path.join(self.dir, f"array/biasfield_{self.prefix}_FLAIR_N4_brain_healthy_mask_rescaled.npy"))
