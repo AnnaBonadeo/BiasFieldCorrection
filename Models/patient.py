@@ -2,6 +2,7 @@ import os.path
 import numpy as np
 import pandas as pd
 from scipy.ndimage import map_coordinates
+import matplotlib.pyplot as plt
 
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 REMOTE = r"C:\Users\Anna\PycharmProjects\Brain_Imaging\bias_field_correction_samples"
@@ -118,7 +119,24 @@ class Patient():
                                                   self.n4hb_flair_array):
             flair_medians.append(i)
         return flair_medians
-
+    def get_patient_df(self):
+        self.t1 = self.get_median_distance_T1()
+        self.t2 = self.get_median_distance_T2()
+        self.t1c = self.get_median_distance_T1c()
+        self.flair = self.get_median_distance_FLAIR()
+        df = pd.DataFrame()
+        data = []
+        for modality, values in zip(["T1", "T2", "T1c", "FLAIR"],[self.t1, self.t2, self.t1c, self.flair]):
+            data.append({"Patient":self.id,
+                         "Modality":modality,
+                         'Native': values[0],
+                         'N4_Brain': values[1],
+                         'N4_Healthy': values[2],
+                         'N4_Brain_Healthy': values[3],
+                         'N4_Healthy_Brain': values[4]
+             })
+        df = pd.DataFrame(data)
+        return df
     def _center_and_intensity(self, volume):
         # Computations for full volume
         total_mass_volume = np.sum(volume)
@@ -180,21 +198,86 @@ class Patient():
             }
             return self.com_data
 
-    def get_patient_df(self):
-        self.t1 = self.get_median_distance_T1()
-        self.t2 = self.get_median_distance_T2()
-        self.t1c = self.get_median_distance_T1c()
-        self.flair = self.get_median_distance_FLAIR()
-        df = pd.DataFrame()
-        data = []
-        for modality, values in zip(["T1", "T2", "T1c", "FLAIR"],[self.t1, self.t2, self.t1c, self.flair]):
-            data.append({"Patient":self.id,
-                         "Modality":modality,
-                         'Native': values[0],
-                         'N4_Brain': values[1],
-                         'N4_Healthy': values[2],
-                         'N4_Brain_Healthy': values[3],
-                         'N4_Healthy_Brain': values[4]
-             })
-        df = pd.DataFrame(data)
-        return df
+    def _com_hexbin(self, volume, biasfield_volume):
+        mask = volume > 0
+        tumor_mask_array\
+            = self.tumor_binary_array
+
+        if tumor_mask_array is not None:
+            tumor_mask = (tumor_mask_array > 0) & mask
+        else:
+            tumor_mask = np.zeros_like(volume, dtype=bool)
+
+        x_vals_full = volume[mask]
+        y_vals_full = biasfield_volume[mask]
+
+        x_vals_tumor = volume[tumor_mask]
+        y_vals_tumor = biasfield_volume[tumor_mask]
+
+        # Center of mass for full image (weighted by hexbin)
+        fig1, ax1 = plt.subplots()
+        hb_full = ax1.hexbin(x_vals_full, y_vals_full, gridsize=50, cmap='Blues', mincnt=1)
+        counts_full = hb_full.get_array() #bin counts (weights): how many point in the bin?
+        offsets_full = hb_full.get_offsets() #bin centers
+
+        plt.close(fig1)
+
+        if len(counts_full) > 0:
+            com_full = (
+                np.average(offsets_full[:, 0], weights=counts_full),
+                np.average(offsets_full[:, 1], weights=counts_full)
+            )
+        else:
+            com_full = (None, None)
+
+        # Center of mass for tumor region (weighted by hexbin)
+        if len(x_vals_tumor) > 0:
+            fig2, ax2 = plt.subplots()
+            hb_tumor = ax2.hexbin(x_vals_tumor, y_vals_tumor, gridsize=50, cmap='Reds', mincnt=1)
+            counts_tumor = hb_tumor.get_array()
+            offsets_tumor = hb_tumor.get_offsets()
+            plt.close(fig2)
+
+            if len(counts_tumor) > 0:
+                com_tumor = (
+                    np.average(offsets_tumor[:, 0], weights=counts_tumor),
+                    np.average(offsets_tumor[:, 1], weights=counts_tumor)
+                )
+            else:
+                com_tumor = (None, None)
+        else:
+            com_tumor = (None, None)
+
+        return {
+            "com_full": com_full,
+            "com_tumor": com_tumor
+        }
+
+    def compute_com_scatterplot(self):
+        self.com_data = {
+            "T1": {
+                "n4bb": self._com_hexbin(self.n4bb_t1_array, self.biasfield_n4bb_t1_array),
+                "n4hh": self._com_hexbin(self.n4hh_t1_array, self.biasfield_n4hh_t1_array),
+                "n4bh": self._com_hexbin(self.n4bh_t1_array, self.biasfield_n4bh_t1_array),
+                "n4hb": self._com_hexbin(self.n4hb_t1_array, self.biasfield_n4hb_t1_array),
+            },
+            "T1c": {
+                "n4bb": self._com_hexbin(self.n4bb_t1c_array, self.biasfield_n4bb_t1c_array),
+                "n4hh": self._com_hexbin(self.n4hh_t1c_array, self.biasfield_n4hh_t1c_array),
+                "n4bh": self._com_hexbin(self.n4bh_t1c_array, self.biasfield_n4bh_t1c_array ),
+                "n4hb": self._com_hexbin(self.n4hb_t1c_array, self.biasfield_n4hb_t1c_array),
+            },
+            "T2": {
+                "n4bb": self._com_hexbin(self.n4bb_t2_array, self.biasfield_n4bb_t2_array),
+                "n4hh": self._com_hexbin(self.n4hh_t2_array, self.biasfield_n4hh_t2_array),
+                "n4bh": self._com_hexbin(self.n4bh_t2_array, self.biasfield_n4bh_t2_array),
+                "n4hb": self._com_hexbin(self.n4hb_t2_array, self.biasfield_n4hb_t2_array),
+            },
+            "FLAIR": {
+                "n4bb": self._com_hexbin(self.n4bb_flair_array, self.biasfield_n4bb_flair_array),
+                "n4hh": self._com_hexbin(self.n4hh_flair_array, self.biasfield_n4hh_flair_array),
+                "n4bh": self._com_hexbin(self.n4bh_flair_array, self.biasfield_n4bh_flair_array),
+                "n4hb": self._com_hexbin(self.n4hb_flair_array, self.biasfield_n4hb_flair_array),
+            },
+        }
+        return self.com_data
