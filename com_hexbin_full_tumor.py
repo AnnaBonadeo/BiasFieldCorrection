@@ -10,11 +10,6 @@ from Models.patient import Patient
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 INPUT_MRI = ["T1", "T1c", "T2", "FLAIR"]
 
-import matplotlib.pyplot as plt
-import numpy as np
-
-import matplotlib.pyplot as plt
-import numpy as np
 
 def plot_com_from_hexbins_with_tumor(patient_data_list, modality="T1"):
     corrections = ["n4bb", "n4hh", "n4bh", "n4hb"]
@@ -105,4 +100,4 @@ if __name__ == "__main__":
     patient_data_list = parallel_process_patients(folders, max_workers=4)  # Adjust as needed
 
     for modality in INPUT_MRI:
-        plot_com_intensities(patient_data_list, modality=modality)
+        plot_com_from_hexbins_with_tumor(patient_data_list, modality=modality)
