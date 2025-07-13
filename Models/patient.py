@@ -200,8 +200,7 @@ class Patient():
 
     def _com_hexbin(self, volume, biasfield_volume):
         mask = volume > 0
-        tumor_mask_array\
-            = self.tumor_binary_array
+        tumor_mask_array = self.tumor_binary_array
 
         if tumor_mask_array is not None:
             tumor_mask = (tumor_mask_array > 0) & mask

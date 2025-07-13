@@ -66,7 +66,7 @@ def process_patient(folder):
     numeric_id = match.group()
     try:
         p = Patient(numeric_id, local=False, mmap=True)  # Custom `mmap` arg if supported
-        p.compute_center_of_mass()
+        p.compute_com_scatterplot()
         data = {"id": numeric_id, "com_data": p.com_data}
         del p  # Explicitly free memory
         print(f"Processed patient: {numeric_id}")
