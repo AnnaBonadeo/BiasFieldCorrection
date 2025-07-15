@@ -40,8 +40,8 @@ def plot_com_from_hexbins_with_tumor(patient_data_list, modality="T1"):
                 y_tumor.append(com_tumor[1])
 
         ax = axes[idx]
-        ax.scatter(x_full, y_full, alpha=0.7, color=colors[correction], label="Full Volume", marker='o')
-        ax.scatter(x_tumor, y_tumor, alpha=0.7, color=colors[correction], label="Tumor Region", marker='x')
+        ax.scatter(x_full, y_full, alpha=0.7, color='red', label="Full Volume", marker='o')
+        ax.scatter(x_tumor, y_tumor, alpha=0.7, color='black', label="Tumor Region", marker='x')
 
         ax.set_title(f"{modality} - {correction}")
         ax.set_xlabel("Weighted CoM: Image Intensity")
