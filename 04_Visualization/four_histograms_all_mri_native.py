@@ -97,10 +97,6 @@ def load_array_from_dir_patient(new_dir_path, patient_dir_name_nifti, patient_nu
 
     return mri_t1_array, mri_t1c_array, mri_t2_array, mri_flair_array, tumor_binary_array
 
-
-
-# MAIN
-# MAIN
 # MAIN LOOP
 if __name__ == '__main__':
     while True:
