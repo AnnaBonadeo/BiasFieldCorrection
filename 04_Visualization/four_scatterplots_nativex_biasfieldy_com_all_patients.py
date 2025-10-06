@@ -189,8 +189,59 @@ def plot_coms_for_all_patients(all_com_bb, all_com_hh, all_com_bh, all_com_hb):
     plt.show()
 
 # MAIN
-if __name__ == '__main__':
+"""if __name__ == '__main__':
     mri_type = get_user_answer(MRI_TYPE)
     all_com_bb, all_com_hh, all_com_bh, all_com_hb = compute_coms_all_patients(NEW_DIR, mri_type)
+    plot_coms_for_all_patients(all_com_bb, all_com_hh, all_com_bh, all_com_hb)"""
+
+# MAIN
+if __name__ == '__main__':
+    import concurrent.futures
+
+    mri_type = get_user_answer(MRI_TYPE)
+
+    # --- Collect all patient folders ---
+    patient_folders = [
+        folder for folder in os.listdir(NEW_DIR)
+        if os.path.isdir(os.path.join(NEW_DIR, folder)) and folder.startswith(CONTROL1)
+    ]
+
+    # --- Define a helper to process each patient (wrapper) ---
+    def process_patient(folder):
+        patient_number = folder.split("-")[2].split("_")[0]
+        array_dir = os.path.join(NEW_DIR, folder, "array")
+        if not os.path.exists(array_dir):
+            print(f"Array directory missing for patient {patient_number}")
+            return patient_number, None
+        try:
+            result = compute_all_com_mri_type(NEW_DIR, folder, mri_type, patient_number)
+            return patient_number, result
+        except Exception as e:
+            print(f"Error processing patient {patient_number}: {e}")
+            return patient_number, None
+
+    # --- Run in parallel ---
+    all_results = []
+    with concurrent.futures.ProcessPoolExecutor() as executor:
+        futures = [executor.submit(process_patient, folder) for folder in patient_folders]
+        for future in concurrent.futures.as_completed(futures):
+            all_results.append(future.result())
+
+    # --- Merge results ---
+    all_com_bb, all_com_hh, all_com_bh, all_com_hb = {}, {}, {}, {}
+    for patient_number, all_com_patient in all_results:
+        if all_com_patient is None:
+            continue
+        for correction in all_com_patient:
+            if 'N4BB' in correction:
+                all_com_bb[patient_number] = all_com_patient[correction]
+            elif 'N4HH' in correction:
+                all_com_hh[patient_number] = all_com_patient[correction]
+            elif 'N4BH' in correction:
+                all_com_bh[patient_number] = all_com_patient[correction]
+            elif 'N4HB' in correction:
+                all_com_hb[patient_number] = all_com_patient[correction]
+
+    # --- Plot ---
     plot_coms_for_all_patients(all_com_bb, all_com_hh, all_com_bh, all_com_hb)
 
