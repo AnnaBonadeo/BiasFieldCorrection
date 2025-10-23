@@ -9,7 +9,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 # === CONFIGURATION ===
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 CONTROL1 = "UCSF-PDGM-"
-MRI_TYPE = ["T1", "T1c", "T2", "FLAIR"]
+MRI_TYPE = ["T1", "T1C", "T2", "FLAIR"]
 N4_VARIANTS = [
     "N4_brain_healthy_mask_rescaled",
     "N4_healthy_mask_brain_rescaled",
