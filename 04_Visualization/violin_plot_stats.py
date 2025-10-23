@@ -9,7 +9,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 # === CONFIGURATION ===
 NEW_DIR = "/mnt/external/reorg_patients_UCSF"
 CONTROL1 = "UCSF-PDGM-"
-MRI_TYPE = ["T1", "T1C", "T2", "FLAIR"]
+MRI_TYPE = ["T1", "T1c", "T2", "FLAIR"]
 N4_VARIANTS = [
     "N4_brain_healthy_mask_rescaled",
     "N4_healthy_mask_brain_rescaled",
@@ -152,6 +152,10 @@ def plot_violin_for_mri_type(mri_type, medians_native, n4_medians):
     data_to_plot = [native, n4bb, n4hh, n4bh, n4hb]
     labels = [f"{mri_type} {VARIANTS[k]}" for k in VARIANTS.keys()]
 
+    print(f"\nChecking data lengths for {mri_type}:")
+    for d, l in zip(data_to_plot, labels):
+        print(f"{l}: {len(d)} values")
+
     plt.figure(figsize=(12, 6))
     plt.violinplot(data_to_plot, showmeans=True)
     plt.xticks(range(1, len(labels) + 1), labels, rotation=15)
@@ -169,11 +173,13 @@ if __name__ == "__main__":
 
     while True:
         choice = input(f"Enter MRI type to plot ({', '.join(MRI_TYPE)}) or 'no' to exit: ").strip()
-        choice_upper = choice.upper()
+        choice_lower = choice.lower()
 
-        if choice_upper in [m.upper() for m in MRI_TYPE]:
-            plot_violin_for_mri_type(choice_upper, medians_native, n4_medians)
-        elif choice_upper == "NO":
+        if choice_lower in [m.lower() for m in MRI_TYPE]:
+            # Get the correctly cased version from MRI_TYPE
+            true_choice = next(m for m in MRI_TYPE if m.lower() == choice_lower)
+            plot_violin_for_mri_type(true_choice, medians_native, n4_medians)
+        elif choice_lower == "no":
             print("Exiting.")
             break
         else:
