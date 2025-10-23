@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.stats as stats
 import scikit_posthocs as sp
+import pandas as pd
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
 # === CONFIGURATION ===
@@ -111,24 +112,34 @@ def compute_medians_all_patients(base_dir, max_workers=8):
 
 # === STATS + PLOTTING ===
 def statistical_test_violin_plot(native, n4bb, n4hh, n4bh, n4hb):
+    """
+    Performs Kruskal–Wallis test and post-hoc Dunn's test across five groups:
+    native, n4bb, n4hh, n4bh, n4hb.
+    """
+    # Combine data
     data_groups = [native, n4bb, n4hh, n4bh, n4hb]
-    labels = ["Native", "N4BB", "N4HH", "N4BH", "N4HB"]
-    valid_data = [(lab, arr) for lab, arr in zip(labels, data_groups)
-                  if arr is not None and len(arr) > 0]
+    labels = ['Native', 'N4BB', 'N4HH', 'N4BH', 'N4HB']
 
-    if len(valid_data) < 2:
-        print("Not enough valid groups for statistical testing.")
-        return
-
-    labels, data_groups = zip(*valid_data)
+    # Perform Kruskal–Wallis test
     H, p = stats.kruskal(*data_groups)
-    print(f"\nKruskal–Wallis test: H={H:.4f}, p={p:.4e}")
+    print(f"Kruskal–Wallis test: H={H:.4f}, p={p:.4e}")
 
-    posthoc = sp.posthoc_dunn(data_groups, p_adjust='bonferroni')
-    posthoc.index = labels
-    posthoc.columns = labels
-    print("\nDunn posthoc test (Bonferroni-corrected p-values):")
-    print(posthoc)
+    # If significant, perform Dunn’s post-hoc test
+    if p < 0.05:
+        # Create long-format DataFrame
+        data_long = pd.DataFrame({
+            'value': np.concatenate(data_groups),
+            'group': np.repeat(labels, [len(g) for g in data_groups])
+        })
+
+        # Perform Dunn's test with Bonferroni correction
+        posthoc = sp.posthoc_dunn(data_long, val_col='value', group_col='group', p_adjust='bonferroni')
+        print("\nPost-hoc Dunn’s test (Bonferroni corrected p-values):")
+        print(posthoc)
+        return posthoc
+    else:
+        print("No significant difference found between groups.")
+        return None
 
 
 def plot_violin_for_mri_type(mri_type, medians_native, n4_medians):
