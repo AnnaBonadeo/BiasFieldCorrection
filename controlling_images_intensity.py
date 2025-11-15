@@ -22,6 +22,7 @@ IMAGE_EXTENSION = "*.nii.gz"
 
 INCLUDE_MODALITIES = ["FLAIR", "T1c"]
 EXCLUDE_KEYWORDS = ["T2", "T1", "dn", "biasfield"]
+VARIANTS
 
 OUTLIER_METHOD = "iqr"
 ZSCORE_THRESHOLD = 3.0
@@ -97,10 +98,15 @@ def collect_intensity_stats():
                 # -----------------------------------
                 # SAFE PARSING: ensure modality + variant exist
                 # -----------------------------------
-                parts = image_path_name.split("_")
+                filename_stem = image_path_name.replace(".nii.gz", "")
+                parts = filename_stem.split("_")
 
-                modality = parts[0]
-                variant = parts[-1]
+                # modality is always the second part
+                modality = parts[1]
+
+                # variant is everything after the modality, joined by "_"
+                variant = "_".join(parts[2:])
+
                 label = f"{modality}_{variant}"
 
                 image_path = os.path(f"{MAIN_FOLDER}/{patient_dir}/{folder}/{image_path_name}")
