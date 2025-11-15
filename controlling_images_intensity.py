@@ -84,13 +84,11 @@ def collect_intensity_stats():
     data = []
 
     for patient_dir in os.listdir(MAIN_FOLDER):
-        print(f"\n📂 Processing {patient_dir.name}")
+        print(f"\n📂 Processing {patient_dir}")
 
-        for folder in [patient_dir / REG_FOLDER_NAME, patient_dir / ANAT_FOLDER_NAME]:
-            if not folder.exists():
-                continue
+        for folder in [f"{patient_dir}/{REG_FOLDER_NAME}", f"{patient_dir}/{ANAT_FOLDER_NAME}"]:
 
-            for image_path in folder.glob(IMAGE_EXTENSION):
+            for image_path in folder:
 
                 if not should_process_image(image_path.name):
                     continue
