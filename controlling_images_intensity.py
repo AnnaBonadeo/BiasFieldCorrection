@@ -19,13 +19,9 @@ ANAT_FOLDER_NAME = "anat"
 
 IMAGE_EXTENSION = "*.nii.gz"
 
-# ---- Modalities to keep ----
 INCLUDE_MODALITIES = ["FLAIR", "T1c"]
-
-# ---- Strings to exclude ----
 EXCLUDE_KEYWORDS = ["T2", "T1", "dn", "biasfield"]
 
-# ----- Outlier detection -----
 OUTLIER_METHOD = "iqr"
 ZSCORE_THRESHOLD = 3.0
 IQR_MULTIPLIER = 1.5
@@ -36,7 +32,7 @@ IQR_MULTIPLIER = 1.5
 # ============================================================
 
 def fslstats(image_path: Path):
-    """Return min, max, mean, std, p95 for an image using fslstats."""
+    """Return min, max, mean, std, p95."""
     try:
         cmd = ["fslstats", str(image_path), "-R", "-m", "-s", "-P", "95"]
         result = subprocess.check_output(cmd, text=True).strip().split()
@@ -48,7 +44,7 @@ def fslstats(image_path: Path):
 
 
 # ============================================================
-#                     OUTLIER DETECTION
+#                    OUTLIER DETECTION
 # ============================================================
 
 def detect_outliers(series: pd.Series, method="iqr"):
@@ -68,39 +64,31 @@ def detect_outliers(series: pd.Series, method="iqr"):
 
 
 # ============================================================
-#                     HELPER: FILTERING LOGIC
+#                     FILTERING LOGIC
 # ============================================================
 
 def should_process_image(image_name: str):
-    """Return True only for allowed modalities and not excluded patterns."""
-
     if not any(mod in image_name for mod in INCLUDE_MODALITIES):
         return False
-
     if any(excl in image_name for excl in EXCLUDE_KEYWORDS):
         return False
-
     return True
 
 
 # ============================================================
-#                     MAIN EXTRACTION LOOP
+#                     MAIN EXTRACTION
 # ============================================================
 
 def collect_intensity_stats():
     data = []
 
     for patient_dir in sorted(MAIN_FOLDER.glob(f"{PATIENT_PREFIX}*")):
-        print(f"\n📂 Processing {patient_dir.name}")
-
         if not patient_dir.is_dir():
             continue
-        candidate_dirs = [
-            patient_dir / REG_FOLDER_NAME,
-            patient_dir / ANAT_FOLDER_NAME,
-        ]
 
-        for folder in candidate_dirs:
+        print(f"\n📂 Processing {patient_dir.name}")
+
+        for folder in [patient_dir / REG_FOLDER_NAME, patient_dir / ANAT_FOLDER_NAME]:
             if not folder.exists():
                 continue
 
@@ -109,16 +97,21 @@ def collect_intensity_stats():
                 if not should_process_image(image_path.name):
                     continue
 
-                # ---- Extract modality and variant ----
+                # -----------------------------------
+                # SAFE PARSING: ensure modality + variant exist
+                # -----------------------------------
                 parts = image_path.stem.split("_")
-                modality = parts[0]            # FLAIR or T1c
-                variant = parts[-1]            # n4bb / n4hb / ...
+                if len(parts) < 2:
+                    print(f"⚠ Skipping malformed filename: {image_path.name}")
+                    continue
 
+                modality = parts[0]
+                variant = parts[-1]
                 label = f"{modality}_{variant}"
 
                 minv, maxv, meanv, stdv, p95 = fslstats(image_path)
 
-                data.append({
+                row = {
                     "patient": patient_dir.name,
                     "image": image_path.name,
                     f"min_{label}": minv,
@@ -126,16 +119,28 @@ def collect_intensity_stats():
                     f"mean_{label}": meanv,
                     f"std_{label}": stdv,
                     f"p95_{label}": p95
-                })
+                }
 
-    # Combine rows by patient
-    df = pd.DataFrame(data)
+                data.append(row)
+
+    # Build DataFrame
     df = pd.DataFrame(data)
 
-    # pivot: one row per patient, columns like min_T1, max_T1, min_T2, ...
+    # -----------------------------------
+    # SAFETY CHECKS
+    # -----------------------------------
+    if df.empty:
+        raise RuntimeError("❌ No valid images found. DataFrame is empty.")
+
+    if "patient" not in df.columns:
+        print(df.head())
+        raise RuntimeError("❌ 'patient' column missing — filenames likely malformed.")
+
+    value_columns = [c for c in df.columns if c not in ("patient", "image")]
+
     df = df.pivot_table(
         index="patient",
-        values=[col for col in df.columns if col not in ("patient", "image")],
+        values=value_columns,
         aggfunc="first"
     ).reset_index()
 
@@ -148,25 +153,20 @@ def collect_intensity_stats():
 
 def write_summary(df: pd.DataFrame, output_file: Path):
 
-    min_cols  = [c for c in df.columns if c.startswith("min_")]
-    max_cols  = [c for c in df.columns if c.startswith("max_")]
+    min_cols = [c for c in df.columns if c.startswith("min_")]
+    max_cols = [c for c in df.columns if c.startswith("max_")]
     mean_cols = [c for c in df.columns if c.startswith("mean_")]
-    std_cols  = [c for c in df.columns if c.startswith("std_")]
-    p95_cols  = [c for c in df.columns if c.startswith("p95_")]
+    std_cols = [c for c in df.columns if c.startswith("std_")]
+    p95_cols = [c for c in df.columns if c.startswith("p95_")]
 
-    all_intensity_cols = min_cols + max_cols + mean_cols + std_cols + p95_cols
+    all_cols = min_cols + max_cols + mean_cols + std_cols + p95_cols
 
     with open(output_file, "w") as f:
 
         f.write("==== INTENSITY SUMMARY REPORT ====\n\n")
+        f.write(df[all_cols].describe().to_string())
+        f.write("\n\nOutlier method: " + OUTLIER_METHOD + "\n\n")
 
-        f.write("Global intensity statistics across all patients:\n")
-        f.write(df[all_intensity_cols].describe().to_string())
-        f.write("\n\n")
-
-        f.write("Outlier detection method: " + OUTLIER_METHOD + "\n\n")
-
-        # Outliers per group
         groups = {
             "min": min_cols,
             "max": max_cols,
@@ -176,29 +176,25 @@ def write_summary(df: pd.DataFrame, output_file: Path):
 
         for name, cols in groups.items():
             f.write(f"\n--- OUTLIERS for {name} ---\n")
-
             for col in cols:
-                outliers = detect_outliers(df[col], OUTLIER_METHOD)
-
+                outliers = detect_outliers(df[col])
                 if outliers.any():
                     f.write(f"\nColumn: {col}\n")
                     f.write(df.loc[outliers, ["patient", col]].to_string() + "\n")
                 else:
-                    f.write(f"\nColumn {col}: No outliers detected.\n")
+                    f.write(f"\nColumn {col}: No outliers.\n")
 
         f.write("\nReport completed.\n")
 
 
 # ============================================================
-#                     MAIN ENTRY POINT
+#                     MAIN
 # ============================================================
 
 if __name__ == "__main__":
-
     df = collect_intensity_stats()
-
     df.to_csv(OUTPUT_CSV, index=False)
-    print(f"\n✅ Intensity statistics saved to: {OUTPUT_CSV.resolve()}")
+    print(f"\n✅ Saved: {OUTPUT_CSV.resolve()}")
 
     write_summary(df, SUMMARY_TXT)
-    print(f"📄 Summary report written to: {SUMMARY_TXT.resolve()}")
+    print(f"📄 Summary saved: {SUMMARY_TXT.resolve()}")
