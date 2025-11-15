@@ -85,7 +85,7 @@ def collect_intensity_stats():
 
     for patient_dir in os.listdir(MAIN_FOLDER):
         patient_number = patient_dir.split("_")[1]
-        patient_number -= (PATIENT_PREFIX)
+        patient_number = patient_number.split("-")[1]
         print(f"\n📂 Processing {patient_dir}")
 
         for folder in [f"{patient_dir}/{REG_FOLDER_NAME}", f"{patient_dir}/{ANAT_FOLDER_NAME}"]:
@@ -109,7 +109,7 @@ def collect_intensity_stats():
                 minv, maxv, meanv, stdv, p95 = fslstats(image_path)
 
                 row = {
-                    "patient": patient_dir.name,
+                    "patient": patient_number,
                     "image": image_path.name,
                     f"min_{label}": minv,
                     f"max_{label}": maxv,
