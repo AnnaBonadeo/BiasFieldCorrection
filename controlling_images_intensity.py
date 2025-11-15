@@ -8,7 +8,7 @@ import numpy as np
 #                     CONFIGURATION CONSTANTS
 # ============================================================
 
-MAIN_FOLDER = Path("mnt/external/reorg_patients_UCSF")
+MAIN_FOLDER = Path("/mnt/external/reorg_patients_UCSF")
 
 OUTPUT_CSV = Path("intensity_report.csv")
 SUMMARY_TXT = Path("intensity_summary.txt")
