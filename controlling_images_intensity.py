@@ -1,3 +1,4 @@
+import os
 import subprocess
 from pathlib import Path
 import pandas as pd
@@ -82,10 +83,7 @@ def should_process_image(image_name: str):
 def collect_intensity_stats():
     data = []
 
-    for patient_dir in MAIN_FOLDER:
-        if not patient_dir.is_dir():
-            continue
-
+    for patient_dir in os.listdir(MAIN_FOLDER):
         print(f"\n📂 Processing {patient_dir.name}")
 
         for folder in [patient_dir / REG_FOLDER_NAME, patient_dir / ANAT_FOLDER_NAME]:
