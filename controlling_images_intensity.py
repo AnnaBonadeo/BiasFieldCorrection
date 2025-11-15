@@ -84,26 +84,27 @@ def collect_intensity_stats():
     data = []
 
     for patient_dir in os.listdir(MAIN_FOLDER):
+        patient_number = patient_dir.split("_")[1]
+        patient_number -= (PATIENT_PREFIX)
         print(f"\n📂 Processing {patient_dir}")
 
         for folder in [f"{patient_dir}/{REG_FOLDER_NAME}", f"{patient_dir}/{ANAT_FOLDER_NAME}"]:
 
-            for image_path in folder:
+            for image_path_name in folder:
 
-                if not should_process_image(image_path.name):
+                if not should_process_image(image_path_name):
                     continue
 
                 # -----------------------------------
                 # SAFE PARSING: ensure modality + variant exist
                 # -----------------------------------
-                parts = image_path.stem.split("_")
-                if len(parts) < 2:
-                    print(f"⚠ Skipping malformed filename: {image_path.name}")
-                    continue
+                parts = image_path_name.split("_")
 
                 modality = parts[0]
                 variant = parts[-1]
                 label = f"{modality}_{variant}"
+
+                image_path = os.path(f"{MAIN_FOLDER}/{patient_dir}/{folder}/{image_path_name}")
 
                 minv, maxv, meanv, stdv, p95 = fslstats(image_path)
 
