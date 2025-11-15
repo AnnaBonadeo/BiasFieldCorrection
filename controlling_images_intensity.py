@@ -11,8 +11,8 @@ import numpy as np
 MAIN_FOLDER = Path("mnt/external/reorg_patients_UCSF")
 
 # Output CSV and summary report
-OUTPUT_CSV = Path("home/giovanni_savini/Desktop/codici_git/BiasFieldCorrection/intensity_report.csv")
-SUMMARY_TXT = Path("home/giovanni_savini/Desktop/codici_git/BiasFieldCorrection/intensity_summary.txt")
+OUTPUT_CSV = Path("intensity_report.csv")
+SUMMARY_TXT = Path("intensity_summary.txt")
 
 # Patient folder naming
 PATIENT_PREFIX = "UCSF-PDGM-"  # Pattern for patient folders
