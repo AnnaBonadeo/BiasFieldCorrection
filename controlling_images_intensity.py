@@ -93,6 +93,8 @@ def collect_intensity_stats():
     for patient_dir in sorted(MAIN_FOLDER.glob(f"{PATIENT_PREFIX}*")):
         print(f"\n📂 Processing {patient_dir.name}")
 
+        if not patient_dir.is_dir():
+            continue
         candidate_dirs = [
             patient_dir / REG_FOLDER_NAME,
             patient_dir / ANAT_FOLDER_NAME,
