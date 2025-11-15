@@ -84,8 +84,8 @@ def collect_intensity_stats():
     data = []
 
     for patient_dir in os.listdir(MAIN_FOLDER):
-        patient_number = patient_dir.split("_")[1]
-        patient_number = patient_number.split("-")[1]
+        patient_number = patient_dir.split("_")[0]
+        patient_number = patient_number.split("-")[2]
         print(f"\n📂 Processing {patient_dir}")
 
         for folder in [f"{patient_dir}/{REG_FOLDER_NAME}", f"{patient_dir}/{ANAT_FOLDER_NAME}"]:
