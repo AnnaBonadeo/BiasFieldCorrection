@@ -15,22 +15,22 @@ OUTPUT_CSV = Path("mnt/external/intensity_report.csv")
 SUMMARY_TXT = Path("mnt/external/intensity_summary.txt")
 
 # Patient folder naming
-PATIENT_PREFIX = "UCSF-PDGM-"            # Pattern for patient folders
+PATIENT_PREFIX = "UCSF-PDGM-"  # Pattern for patient folders
 
 # Subfolder names
-REG_FOLDER_NAME = "reg"                # Folder containing .nii.gz images
-ANAT_FOLDER_NAME = "anat"              # (Optional – included if you need it)
+REG_FOLDER_NAME = "reg"
+ANAT_FOLDER_NAME = "anat"
 
 # Image extension to search
 IMAGE_EXTENSION = "*.nii.gz"
 
-# Outlier detection method ("zscore" or "iqr")
+# ---- Modalities ----
+INCLUDE_MODALITIES = ["FLAIR", "T1c"]       # Only these will be processed
+EXCLUDE_KEYWORDS = ["T2", "T1", "dn", "biasfield"]  # These will be excluded
+
+# Outlier detection method
 OUTLIER_METHOD = "iqr"
-
-# Z-score threshold for outliers (if method="zscore")
 ZSCORE_THRESHOLD = 3.0
-
-# IQR multiplier for outliers (if method="iqr")
 IQR_MULTIPLIER = 1.5
 
 # ============================================================
@@ -40,10 +40,6 @@ IQR_MULTIPLIER = 1.5
 def fslstats(image_path: Path):
     """Return min, max, mean, std, p95 for an image using fslstats."""
     try:
-        # -R = min max
-        # -m = mean
-        # -s = std
-        # -P 95 = 95th percentile
         cmd = [
             "fslstats", str(image_path),
             "-R", "-m", "-s", "-P", "95"
@@ -62,7 +58,6 @@ def fslstats(image_path: Path):
 # ============================================================
 
 def detect_outliers(series: pd.Series, method="iqr"):
-    """Return boolean mask indicating outliers."""
     if method == "zscore":
         zscores = np.abs((series - series.mean()) / series.std())
         return zscores > ZSCORE_THRESHOLD
@@ -79,6 +74,23 @@ def detect_outliers(series: pd.Series, method="iqr"):
 
 
 # ============================================================
+#                     HELPER: FILTERING LOGIC
+# ============================================================
+
+def should_process_image(image_name: str):
+    """Return True only for allowed modalities and not excluded patterns."""
+    # Must contain one of the included modalities
+    if not any(mod in image_name for mod in INCLUDE_MODALITIES):
+        return False
+
+    # Must NOT contain any excluded keyword
+    if any(excl in image_name for excl in EXCLUDE_KEYWORDS):
+        return False
+
+    return True
+
+
+# ============================================================
 #                     MAIN EXTRACTION LOOP
 # ============================================================
 
@@ -88,7 +100,6 @@ def collect_intensity_stats():
     for patient_dir in sorted(MAIN_FOLDER.glob(f"{PATIENT_PREFIX}*")):
         print(f"\n📂 Processing {patient_dir.name}")
 
-        # Search for nii.gz in selected subfolders
         candidate_dirs = [
             patient_dir / REG_FOLDER_NAME,
             patient_dir / ANAT_FOLDER_NAME,
@@ -99,9 +110,13 @@ def collect_intensity_stats():
                 continue
 
             for image_path in folder.glob(IMAGE_EXTENSION):
-                if "dn" and "biasfield" and "T2" in image_path.name:
+
+                # ---- Apply your filtering logic ----
+                if not should_process_image(image_path.name):
                     continue
+
                 minv, maxv, meanv, stdv, p95 = fslstats(image_path)
+
                 data.append({
                     "patient": patient_dir.name,
                     "folder": folder.name,
@@ -113,8 +128,7 @@ def collect_intensity_stats():
                     "p95": p95
                 })
 
-    df = pd.DataFrame(data)
-    return df
+    return pd.DataFrame(data)
 
 
 # ============================================================
@@ -133,6 +147,7 @@ def write_summary(df: pd.DataFrame, output_file: Path):
         for col in ["min", "max", "mean", "p95"]:
             f.write(f"--- OUTLIERS in {col} ---\n")
             outliers = detect_outliers(df[col], OUTLIER_METHOD)
+
             if outliers.any():
                 f.write(df[outliers][["patient", "image", col]].to_string())
             else:
