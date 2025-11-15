@@ -82,7 +82,7 @@ def should_process_image(image_name: str):
 def collect_intensity_stats():
     data = []
 
-    for patient_dir in sorted(MAIN_FOLDER.glob(f"{PATIENT_PREFIX}*")):
+    for patient_dir in MAIN_FOLDER:
         if not patient_dir.is_dir():
             continue
 
