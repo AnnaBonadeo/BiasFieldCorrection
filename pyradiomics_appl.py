@@ -7,12 +7,14 @@ from radiomics import featureextractor
 # ============================================================
 
 # --- Paths ---
-MAIN_FOLDER = Path("/path/to/main_folder")          # Root directory containing patient folders
+MAIN_FOLDER = Path("/mnt/external/reorg_patients_UCSF")          # Root directory containing patient folders
 OUTPUT_CSV = Path("radiomics_features.csv")         # Output CSV file path
 
 # --- MRI Modalities and N4 Variants ---
 MODALITIES = ["FLAIR", "T1c"]                       # Modalities to process
-N4_VARIANTS = ["n4bb", "n4hb", "n4hh", "n4bh"]      # Correction variants to include
+
+# native, n4bb, n4hb
+IMAGES_TO_INCLUDE = ["brain.nii.gz", "healthy_mask_brain.nii.gz"]      # Correction variants to include
 
 # --- File Naming ---
 SEGMENTATION_FILENAME = "segmentation.nii.gz"       # File name in seg/ folder
@@ -20,12 +22,16 @@ REG_FOLDER_NAME = "reg"                             # Subfolder containing the r
 SEG_FOLDER_NAME = "seg"                             # Subfolder containing the segmentation mask
 
 # --- PyRadiomics Parameters ---
+# DA CONTROLLARE TUTTI
 PYRADIOMICS_PARAMS = {
     "binWidth": 25,
     "resampledPixelSpacing": None,
-    "interpolator": "sitkBSpline",
+    "interpolator": "sitkBSpline", # CONTROLLA
     "enableCExtensions": True,
 }
+# CONTROLLA SE IMMAGINI CORRETTE ARRIVANO A 65000
+# CONTROLLA SE CI SONO IMMAGINI CON RANGE DI INTENSITà -> CONTROLLA FSLSTATS
+# OPPURE CONTROLLA NEL NIFTI SE LE INTENSITà SONO INTERE E IN QUANTI BIT SONO SALVATI
 
 # --- Output Control ---
 PATIENT_PREFIX = "patient_"                         # Pattern prefix for patient folders
