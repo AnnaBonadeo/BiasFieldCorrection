@@ -128,7 +128,14 @@ def collect_intensity_stats():
 
     # Combine rows by patient
     df = pd.DataFrame(data)
-    df = df.groupby("patient").first().reset_index()
+    df = pd.DataFrame(data)
+
+    # pivot: one row per patient, columns like min_T1, max_T1, min_T2, ...
+    df = df.pivot_table(
+        index="patient",
+        values=[col for col in df.columns if col not in ("patient", "image")],
+        aggfunc="first"
+    ).reset_index()
 
     return df
 
