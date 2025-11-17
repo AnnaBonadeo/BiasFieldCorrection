@@ -122,7 +122,12 @@ def collect_intensity_stats():
 
                 image_path = Path(f"{MAIN_FOLDER}/{patient_dir}/{patient_dir}/{image_name}")
 
-                minv, maxv, meanv, stdv, p95 = fslstats(image_path)
+                #minv, maxv, meanv, stdv, p95 = fslstats(image_path)
+                try:
+                    minv, maxv, meanv, stdv, p95 = fslstats(image_path)
+                except Exception as e:
+                    print(f"      ❌ fslstats FAILED on {image_path}: {e}")
+                    continue
 
                 row = {
                     "patient": patient_number,
