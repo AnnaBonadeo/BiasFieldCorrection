@@ -107,8 +107,11 @@ def collect_intensity_stats():
     data = []
 
     for patient_dir in os.listdir(MAIN_FOLDER):
+
         print(patient_dir)
         patient_number = patient_dir.split("_")[0]
+        print(patient_number)
+
         print(f"\n📂 Processing {patient_dir}")
         folder_reg_path = os.path.join(patient_dir, REG_FOLDER_NAME)
 
