@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+import os
 from radiomics import featureextractor
 
 # ============================================================
@@ -8,16 +9,17 @@ from radiomics import featureextractor
 
 # --- Paths ---
 MAIN_FOLDER = Path("/mnt/external/reorg_patients_UCSF")          # Root directory containing patient folders
-OUTPUT_CSV = Path("radiomics_features.csv")         # Output CSV file path
+OUTPUT_CSV = Path("/mnt/external/radiomics_features.csv")         # Output CSV file path
 
 # --- MRI Modalities and N4 Variants ---
 MODALITIES = ["FLAIR", "T1c"]                       # Modalities to process
 
 # native, n4bb, n4hb
-IMAGES_TO_INCLUDE = ["brain.nii.gz", "healthy_mask_brain.nii.gz"]      # Correction variants to include
+N4_VARIANTS = ["brain", "healthy_mask_brain"]      # Correction variants to include
 
 # --- File Naming ---
 SEGMENTATION_FILENAME = "segmentation.nii.gz"       # File name in seg/ folder
+ANAT_FOLDER_NAME = "anat"                           # Subfolder containing the native images
 REG_FOLDER_NAME = "reg"                             # Subfolder containing the registered images
 SEG_FOLDER_NAME = "seg"                             # Subfolder containing the segmentation mask
 
@@ -34,7 +36,7 @@ PYRADIOMICS_PARAMS = {
 # OPPURE CONTROLLA NEL NIFTI SE LE INTENSITà SONO INTERE E IN QUANTI BIT SONO SALVATI
 
 # --- Output Control ---
-PATIENT_PREFIX = "patient_"                         # Pattern prefix for patient folders
+PATIENT_PREFIX = "UCSF-PDGM-"                         # Pattern prefix for patient folders
 ID_COLUMN = "patient_id"                            # Name of ID column in CSV
 
 # ============================================================
@@ -59,7 +61,7 @@ def extract_features(image_path: Path, mask_path: Path) -> dict:
         # Remove diagnostic keys (metadata)
         return {k: v for k, v in result.items() if not k.startswith("diagnostics")}
     except Exception as e:
-        print(f"⚠️ Error processing {image_path.name}: {e}")
+        print(f"Error processing {image_path.name}: {e}")
         return {}
 
 def rename_features(features: dict, modality: str, variant: str) -> dict:
@@ -73,30 +75,56 @@ def process_all_patients(main_folder: Path) -> pd.DataFrame:
     """Iterate through all patients and collect radiomics features."""
     all_data = []
 
-    for patient_dir in sorted(main_folder.glob(f"{PATIENT_PREFIX}*")):
-        print(f"\n📂 Processing {patient_dir.name}")
+    for patient_dir in os.listdir(MAIN_FOLDER):
+        patient_number = patient_dir.split("_")[0]
+        print(f"\n📂 Processing {patient_number}")
 
-        seg_path = patient_dir / SEG_FOLDER_NAME / SEGMENTATION_FILENAME
-        if not seg_path.exists():
-            print(f"⚠️ Missing segmentation in {patient_dir.name}, skipping.")
+        anat_path = os.path.join(MAIN_FOLDER, patient_dir, ANAT_FOLDER_NAME)
+        if not os.path.isdir(anat_path):
+            print(f"Missing anat in {patient_number}, skipping.")
             continue
 
-        reg_dir = patient_dir / REG_FOLDER_NAME
-        if not reg_dir.exists():
-            print(f"⚠️ Missing reg/ folder in {patient_dir.name}, skipping.")
+        seg_path = os.path.join(MAIN_FOLDER, patient_dir, SEG_FOLDER_NAME)
+        if not os.path.isdir(seg_path):
+            print(f"Missing seg in {patient_number}, skipping.")
+            continue
+        print("Find the tumor binary mask")
+
+        reg_path = os.path.join(MAIN_FOLDER, patient_dir, REG_FOLDER_NAME)
+        if not os.path.isdir(reg_path):
+            print(f"Missing reg in {patient_number}, skipping.")
             continue
 
-        patient_features = {ID_COLUMN: patient_dir.name}
+        patient_features = {ID_COLUMN: patient_number}
+        tumor_mask_binary_path = os.path.join(seg_path, "tumor_binary.nii.gz")
+        if not os.path.isfile(tumor_mask_binary_path):
+            print("Missing segmentation mask, skipping")
+            continue
+        # Native images
+        for modality in MODALITIES:
+            variant = "nat"
+            img_path_native = os.path.join(anat_path, f"{patient_number}_{modality}.nii.gz")
+            if not os.path.isfile(img_path_native):
+                print(f"Missing {modality} for {patient_number}, skipping.")
+                continue
+            feats = extract_features(img_path_native, tumor_mask_binary_path)
+            renamed_feats = rename_features(feats, modality, variant)
+            patient_features.update(renamed_feats)
 
         # Iterate through modalities and correction variants
         for modality in MODALITIES:
+            img_path_native = os.path.join(anat_path, f"{patient_number}_{modality}.nii.gz")
+            if not os.path.isfile(img_path_native):
+                print(f"Missing {modality} for {patient_number}, skipping.")
+                continue
             for variant in N4_VARIANTS:
-                img_path = reg_dir / f"{modality}_{variant}.nii.gz"
-                if not img_path.exists():
-                    print(f"   ⚠️ Missing {img_path.name}, skipping this combination.")
+                # N4 images
+                img_path = os.path.join(reg_path, f"{patient_number}_{modality}_N4_{variant}.nii.gz")
+                if not os.path.isfile(img_path):
+                    print(f"Missing {modality} and {variant} for {patient_number}, skipping.")
                     continue
 
-                feats = extract_features(img_path, seg_path)
+                feats = extract_features(img_path, tumor_mask_binary_path)
                 renamed_feats = rename_features(feats, modality, variant)
                 patient_features.update(renamed_feats)
 
