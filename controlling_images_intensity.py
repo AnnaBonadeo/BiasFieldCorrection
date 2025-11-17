@@ -110,12 +110,12 @@ def collect_intensity_stats():
         patient_number = patient_dir.split("_")[0]
         print(f"\n📂 Processing {patient_dir}")
         folder_reg_path = Path(f"{patient_dir}/{REG_FOLDER_NAME}")
-        print(folder_reg_path.name)
         if not folder_reg_path.is_dir():
             continue
 
         for image_name in os.listdir(folder_reg_path):
             image_modality, image_variant = get_image_modality_and_variant(image_name)
+            print(image_modality, image_variant)
             if should_process_image(image_modality, image_variant, image_name):
 
 
