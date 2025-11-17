@@ -109,9 +109,13 @@ def collect_intensity_stats():
     for patient_dir in os.listdir(MAIN_FOLDER):
         patient_number = patient_dir.split("_")[0]
         print(f"\n📂 Processing {patient_dir}")
-        folder_reg_path = Path(f"{patient_dir}/{REG_FOLDER_NAME}")
-        if not folder_reg_path.exists():
+        folder_reg_path = os.path.join(patient_dir, REG_FOLDER_NAME)
+
+        # --- Proper folder existence check ---
+        if not os.path.isdir(folder_reg_path):
+            print(f"Skipping patient {patient_number}: folder not found → {folder_reg_path}")
             continue
+
 
         for image_name in os.listdir(folder_reg_path):
             image_modality, image_variant = get_image_modality_and_variant(image_name)
