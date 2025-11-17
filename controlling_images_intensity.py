@@ -107,19 +107,19 @@ def collect_intensity_stats():
     data = []
 
     for patient_dir in os.listdir(MAIN_FOLDER):
+        print("DEBUG patient_dir:", patient_dir)
 
-        print(patient_dir)
         patient_number = patient_dir.split("_")[0]
-        print(patient_number)
+        print("DEBUG patient_number:", patient_number)
 
         print(f"\n📂 Processing {patient_dir}")
-        folder_reg_path = os.path.join(patient_dir, REG_FOLDER_NAME)
 
-        # --- Proper folder existence check ---
+        folder_reg_path = os.path.join(MAIN_FOLDER, patient_dir, REG_FOLDER_NAME)
+        print("DEBUG folder_reg_path:", folder_reg_path)
+
         if not os.path.isdir(folder_reg_path):
             print(f"Skipping patient {patient_number}: folder not found → {folder_reg_path}")
             continue
-
 
         for image_name in os.listdir(folder_reg_path):
             image_modality, image_variant = get_image_modality_and_variant(image_name)
