@@ -121,7 +121,7 @@ def collect_intensity_stats():
                 label = f"{image_modality}_{image_variant}"
 
                 image_path = Path(f"{MAIN_FOLDER}/{patient_dir}/{patient_dir}/{image_name}")
-
+                print(image_path)
                 #minv, maxv, meanv, stdv, p95 = fslstats(image_path)
                 try:
                     minv, maxv, meanv, stdv, p95 = fslstats(image_path)
