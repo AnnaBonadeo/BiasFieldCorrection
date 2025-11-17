@@ -20,13 +20,49 @@ ANAT_FOLDER_NAME = "anat"
 
 IMAGE_EXTENSION = "*.nii.gz"
 
-INCLUDE_MODALITIES = ["FLAIR", "T1c"]
-EXCLUDE_KEYWORDS = ["T2", "T1", "dn", "biasfield"]
 
+########################## da mettere in ordine concentrico per raggio decrescente ahahah
+ALL_MODALITIES = ["T1c", "T1", "FLAIR", "T2"]
+ALL_VARIANTS = ["healthy_mask_brain", "brain_healthy_mask", "brain", "healthy_mask"]
+
+INCLUDE_MODALITIES = ["FLAIR", "T1c"]
+INCLUDE_VARIANTS = ["brain", "healthy_mask_brain"]
+
+EXCLUDE_KEYWORDS = ["dn", "biasfield"]
+#########################
 OUTLIER_METHOD = "iqr"
 ZSCORE_THRESHOLD = 3.0
 IQR_MULTIPLIER = 1.5
 
+
+# ============================================================
+#                     FILTERING LOGIC
+# ============================================================
+# questo assulatemtne da applicare dopo shuold process senno non funziona
+def get_image_modality_and_variant(image_name):
+    image_modality = None
+    image_variant = None
+
+    for mod in ALL_MODALITIES:
+        if mod in image_name:
+            image_modality = mod
+            break
+
+    for var in ALL_VARIANTS:
+        if var in image_name:
+            image_variant = var
+            break
+
+    return image_modality, image_variant
+
+def should_process_image(image_modality, image_variant, image_name):
+    if image_modality not in INCLUDE_MODALITIES or image_variant not in INCLUDE_VARIANTS:
+        return False
+    for i in EXCLUDE_KEYWORDS:
+        if i in image_name:
+            return False
+
+    return True
 
 # ============================================================
 #                     FSL UTILS
@@ -63,19 +99,6 @@ def detect_outliers(series: pd.Series, method="iqr"):
     else:
         raise ValueError("Unknown outlier detection method.")
 
-
-# ============================================================
-#                     FILTERING LOGIC
-# ============================================================
-
-def should_process_image(image_name: str):
-    if not any(mod in image_name for mod in INCLUDE_MODALITIES):
-        return False
-    if any(excl in image_name for excl in EXCLUDE_KEYWORDS):
-        return False
-    return True
-
-
 # ============================================================
 #                     MAIN EXTRACTION
 # ============================================================
@@ -86,35 +109,22 @@ def collect_intensity_stats():
     for patient_dir in os.listdir(MAIN_FOLDER):
         patient_number = patient_dir.split("_")[0]
         print(f"\n📂 Processing {patient_dir}")
+        folder_reg_path = Path(f"{patient_dir}/{REG_FOLDER_NAME}")
 
-        for folder in [f"{patient_dir}/{REG_FOLDER_NAME}", f"{patient_dir}/{ANAT_FOLDER_NAME}"]:
+        for image_name in os.listdir(folder_reg_path):
+            image_modality, image_variant = get_image_modality_and_variant(image_name)
+            if should_process_image(image_modality, image_variant, image_name):
 
-            for image_path_name in folder:
 
-                if not should_process_image(image_path_name):
-                    continue
+                label = f"{image_modality}_{image_variant}"
 
-                # -----------------------------------
-                # SAFE PARSING: ensure modality + variant exist
-                # -----------------------------------
-                filename_stem = image_path_name.replace(".nii.gz", "")
-                parts = filename_stem.split("_")
-
-                # modality is always the second part
-                modality = parts[1]
-
-                # variant is everything after the modality, joined by "_"
-                variant = "_".join(parts[2:])
-
-                label = f"{modality}_{variant}"
-
-                image_path = os.path(f"{MAIN_FOLDER}/{patient_dir}/{folder}/{image_path_name}")
+                image_path = Path(f"{MAIN_FOLDER}/{patient_dir}/{patient_dir}/{image_name}")
 
                 minv, maxv, meanv, stdv, p95 = fslstats(image_path)
 
                 row = {
                     "patient": patient_number,
-                    "image": image_path.name,
+                    "image": image_name,
                     f"min_{label}": minv,
                     f"max_{label}": maxv,
                     f"mean_{label}": meanv,
