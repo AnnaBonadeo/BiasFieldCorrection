@@ -135,6 +135,7 @@ def collect_intensity_stats():
                 }
 
                 data.append(row)
+    print(data)
 
     # Build DataFrame
     df = pd.DataFrame(data)
