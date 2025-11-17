@@ -10,8 +10,8 @@ import numpy as np
 
 MAIN_FOLDER = Path("/mnt/external/reorg_patients_UCSF")
 
-OUTPUT_CSV = Path("intensity_report.csv")
-SUMMARY_TXT = Path("intensity_summary.txt")
+OUTPUT_CSV = Path("/mnt/external/intensity_report.csv")
+SUMMARY_TXT = Path("/mnt/external/intensity_summary.txt")
 
 PATIENT_PREFIX = "UCSF-PDGM-"
 
@@ -129,7 +129,7 @@ def collect_intensity_stats():
 
                 label = f"{image_modality}_{image_variant}"
 
-                image_path = Path(f"{MAIN_FOLDER}/{patient_dir}/{patient_dir}/{image_name}")
+                image_path = Path(f"{MAIN_FOLDER}/{patient_dir}/{REG_FOLDER_NAME}/{image_name}")
                 print(image_path)
                 #minv, maxv, meanv, stdv, p95 = fslstats(image_path)
                 try:
@@ -149,7 +149,6 @@ def collect_intensity_stats():
                 }
 
                 data.append(row)
-    print(data)
 
     # Build DataFrame
     df = pd.DataFrame(data)
