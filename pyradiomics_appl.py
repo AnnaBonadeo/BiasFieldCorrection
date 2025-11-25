@@ -97,6 +97,7 @@ def process_all_patients(main_folder: Path) -> pd.DataFrame:
             continue
 
         patient_features = {ID_COLUMN: patient_number}
+        print(seg_path)
         tumor_mask_binary_path = os.path.join(seg_path, "tumor_binary.nii.gz")
         if not os.path.isfile(tumor_mask_binary_path):
             print("Missing segmentation mask, skipping")
