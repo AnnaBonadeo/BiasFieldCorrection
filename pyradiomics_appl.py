@@ -8,8 +8,8 @@ from radiomics import featureextractor
 # ============================================================
 
 # --- Paths ---
-MAIN_FOLDER = Path("/mnt/external/reorg_patients_UCSF")          # Root directory containing patient folders
-OUTPUT_CSV = Path("/mnt/external/radiomics_features.csv")         # Output CSV file path
+MAIN_FOLDER = "/mnt/external/reorg_patients_UCSF"         # Root directory containing patient folders
+OUTPUT_CSV = "/mnt/external/radiomics_features.csv"        # Output CSV file path
 
 # --- MRI Modalities and N4 Variants ---
 MODALITIES = ["FLAIR", "T1c"]                       # Modalities to process
@@ -26,11 +26,12 @@ SEG_FOLDER_NAME = "seg"                             # Subfolder containing the s
 # --- PyRadiomics Parameters ---
 # DA CONTROLLARE TUTTI
 PYRADIOMICS_PARAMS = {
-    "binWidth": 25,
-    "resampledPixelSpacing": None,
-    "interpolator": "sitkBSpline", # CONTROLLA
-    "enableCExtensions": True,
+    'binWidth': 15,
+    'normalize': True,
+    'normalizeScale' : 100,
+    'voxelArrayShift': 300
 }
+
 # CONTROLLA SE IMMAGINI CORRETTE ARRIVANO A 65000
 # CONTROLLA SE CI SONO IMMAGINI CON RANGE DI INTENSITà -> CONTROLLA FSLSTATS
 # OPPURE CONTROLLA NEL NIFTI SE LE INTENSITà SONO INTERE E IN QUANTI BIT SONO SALVATI
