@@ -28,14 +28,23 @@ def load_medians(mri_type, variant=None):
         print(f"Warning: {filename} not found.")
         return []
 
+import scikit_posthocs as sp
 
 def statistical_test_violin_plot(native, n4bb_data, n4hh_data, n4bh_data, n4hb_data):
     data_groups = [native, n4bb_data, n4hh_data, n4bh_data, n4hb_data]
     labels = ["Native", "N4BB", "N4HH", "N4BH", "N4HB"]
 
     # Filter out None or empty arrays
-    valid_data = [(lab, arr) for lab, arr in zip(labels, data_groups)
-                  if arr is not None and len(arr) > 0]
+    valid_data = []
+    for lab, arr in zip(labels, data_groups):
+        if arr is None:
+            continue
+
+        arr = np.asarray(arr, dtype=float)
+        arr = arr[~np.isnan(arr)]   # remove NaNs if present
+
+        if len(arr) > 0:
+            valid_data.append((lab, arr))
 
     if len(valid_data) < 2:
         print("Not enough valid groups for statistical testing.")
@@ -47,15 +56,29 @@ def statistical_test_violin_plot(native, n4bb_data, n4hh_data, n4bh_data, n4hb_d
     H, p = stats.kruskal(*data_groups)
     print(f"\nKruskal–Wallis test: H={H:.4f}, p={p:.4e}")
 
+    # Build long-format dataframe for Dunn test
+    values = []
+    groups = []
+
+    for lab, arr in zip(labels, data_groups):
+        values.extend(arr.tolist())
+        groups.extend([lab] * len(arr))
+
+    df = pd.DataFrame({
+        "value": values,
+        "group": groups
+    })
+
     # Dunn posthoc test
-    posthoc = sp.posthoc_dunn(data_groups, p_adjust='bonferroni')
-    posthoc.index = labels
-    posthoc.columns = labels
+    posthoc = sp.posthoc_dunn(df, val_col="value", group_col="group", p_adjust="bonferroni")
+
+    # Reorder rows/columns to match labels
+    posthoc = posthoc.loc[list(labels), list(labels)]
+
     print("\nDunn posthoc test (Bonferroni-corrected p-values):")
     print(posthoc)
 
     return {"H": H, "p": p, "posthoc": posthoc}
-
 
 def plot_violin_for_mri_type(mri_type):
     data_to_plot = []
