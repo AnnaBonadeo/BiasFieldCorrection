@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import scipy.stats as stats
 import scikit_posthocs as sp
 
-PLOT_DIR = "00_UCSF_PDGM_violin_plot"
+PLOT_DIR = "/mnt/external/reorg_patients_UCSF/00_UCSF_PDGM_violin_plot"
 MRI_TYPE = ["T1", "T1c", "T2", "FLAIR"]
 VARIANTS = {
     'native': 'native',
