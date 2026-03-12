@@ -14,8 +14,8 @@ N4_VARIANTS = [
 
 def compute_median_distance_histograms(array_whole_brain, array_tumor_binary):
     median_whole_brain = np.median(array_whole_brain[array_whole_brain > 0])
-    array_tumor = array_whole_brain * array_tumor_binary
-    median_tumor = np.median(array_tumor)
+    tumor_values = array_whole_brain[array_tumor_binary > 0]
+    median_tumor = np.median(tumor_values)
     median_distance = median_whole_brain - median_tumor
     return median_distance, median_whole_brain, median_tumor
 
