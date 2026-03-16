@@ -20,8 +20,8 @@ def plot_ax_mri_type(hist_mri, bins_mri, hist_tumor, bins_tumor, name_plot, ax =
         fig, ax = plt.subplots()
 
     # Plot histograms on the provided axis
-    ax.plot(bins_mri[1:-1], hist_mri[1:], color='pink', linewidth=1)
-    ax.plot(bins_tumor[1:-1], hist_tumor[1:], color='yellow', linewidth=1)
+    ax.plot(bins_mri[1:-1], hist_mri[1:], color='black', linewidth=1)
+    ax.plot(bins_tumor[1:-1], hist_tumor[1:], color='blue', linewidth=1)
 
     # Labels and title in white
     ax.set_xlabel('Voxel Intensity', color='black')
@@ -32,7 +32,7 @@ def plot_ax_mri_type(hist_mri, bins_mri, hist_tumor, bins_tumor, name_plot, ax =
     ax.grid(True, linestyle='--', linewidth=0.5, color='gray')
 
     # Set dark background for the plot
-    ax.set_facecolor('black')
+    ax.set_facecolor('white')
     ax.tick_params(axis='both', colors='black')  # White ticks
 
     return ax
